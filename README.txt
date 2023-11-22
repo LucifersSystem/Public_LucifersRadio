@@ -9,6 +9,8 @@ Please join :)
 THIS RADIO REQUIRES YOU TO SETUP AND CONFIGURE THE RELEVANT JOBS AS THE CLIENT WILL ONLY SEE THE RELEVANT AUTHORIZED RADIO CHANNELS, IF ANY.
 EVERY RADIO CHANNEL HAS ITS OWN GENERATED ID, FOR SECURITY REASONS.
 
+MY RADIO HAS FULL ESX AND QBCORE INTEGRATION!!!
+
 ------------------------------------------------------------------
 START COMMAND: npm start
 ------------------------------------------------------------------
