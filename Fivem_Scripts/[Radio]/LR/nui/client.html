@@ -1,0 +1,514 @@
+<!doctype html>
+
+
+<html style="display: none">
+<head>
+    <script>
+        let currentVolume=1;
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script>
+        navigator.getUserMedia = ( navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia ||
+            navigator.msGetUserMedia);
+
+        attachMediaStream = function(element, stream) {
+            element.srcObject = stream;
+        };
+
+        navigator.getUserMedia({"audio":true, "video":false},
+            function(stream) { /* user accepted access to a/v */
+                local_media_stream = stream;
+                const local_media = $(`<audio style='display:none'>`);
+                local_media.attr("muted", "true"); /* always mute ourselves by default */
+                $('body').append(local_media);
+                attachMediaStream(local_media[0], stream);
+                local_media_stream.getAudioTracks()[0].enabled = false;
+            },
+            function() { /* user denied access to a/v */
+                console.log("Access denied for audio/video");
+            });
+    </script>
+    <style>
+    </style>
+    <script src="http://localhost:9001/js/jq.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tunajs/1.0.11/tuna-min.js"></script>
+    <script src="http://localhost:9001/js/socket.js"></script>
+    <script src='http://localhost:9001/js/voice.js'></script>
+    <script>
+        let panic_sound_url = "http://localhost:9001/sounds/panic-button.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let ptt_sound_Active_Url = "http://localhost:9001/sounds/pttactive.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let ptt_sound_NOT_Active_Url = "http://localhost:9001/sounds/pttdisabled.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let server_sound_NOT_Connected_Url = "http://localhost:9001/sounds/deny.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let currChannel = 0;
+        let pttValue = false;
+        let Int_Channels = new Array();
+        let Int_ChannelNames = new Array();
+        let Int_CommunityName = null;
+        let Int_CommunityKey = null;
+        let Self_DiscordID = null;
+        let Self_FivemLicense = null;
+        let Self_Curr_Job = null;
+        let Is_Conn = false;
+        let Is_Debug = false;
+        let isPriority_current = false;
+
+        var Messaging_SERVER = "http://localhost:9001/net"; //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        var _SERVER = "http://localhost:9001/dynamic-"; //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        var isAuth = false;
+        var _socket = null;
+        var _ms = null;
+        function init(AuthKey, DiscordID, FivemLicense) {
+            Int_CommunityKey = AuthKey;
+
+            _ms = io(Messaging_SERVER, {transports: ['websocket']});
+            _socket = io(Messaging_SERVER, {transports: ['websocket']});
+
+            fetch(`https://${GetParentResourceName()}/radiodata`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                },
+                body: JSON.stringify({
+                    msgType: 'connecting'
+                })
+            }).then(resp => resp.json()).then(resp => function (){
+                if(Is_Debug){
+                    console.log(resp);
+                }
+            });
+
+            _ms.on('connect', function () {
+                Is_Conn = true;
+                fetch(`https://${GetParentResourceName()}/radiodata`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: JSON.stringify({
+                        msgType: 'Authenticating'
+                    })
+                }).then(resp => resp.json()).then(resp => function (){
+                    if(Is_Debug){
+                        console.log(resp);
+                    }
+                });
+                fetch(`https://${GetParentResourceName()}/radiodata`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: JSON.stringify({
+                        msgType: 'Char_Update',
+                        job: Self_Curr_Job
+                    })
+                }).then(resp => resp.json()).then(resp => function (){
+                    if(Is_Debug){
+                        console.log(resp);
+                    }
+                });
+                var o = [{
+                    Key: AuthKey,
+                    Discord: DiscordID,
+                    Fivem: FivemLicense,
+                    CurrJob: Self_Curr_Job
+                }]
+                _ms.emit("Auth", o);
+            });
+            _ms.on('connect_error', function (){
+                new Audio(server_sound_NOT_Connected_Url).play();
+                fetch(`https://${GetParentResourceName()}/radiodata`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: JSON.stringify({
+                        msgType: 'Server_LostConn'
+                    })
+                }).then(resp => resp.json()).then(resp => function (){
+                    if(Is_Debug){
+                        console.log(resp);
+                    }
+                });
+            });
+            _socket.on('connect_error', function (){
+                new Audio(server_sound_NOT_Connected_Url).play();
+                fetch(`https://${GetParentResourceName()}/radiodata`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: JSON.stringify({
+                        msgType: 'Server_LostConn'
+                    })
+                }).then(resp => resp.json()).then(resp => function (){
+                    if(Is_Debug){
+                        console.log(resp);
+                    }
+                });
+            });
+            _ms.on('Net_Update', function (data) {
+                // @ts-ignore
+                if(Is_Debug) {
+                    console.info("Got Network Update");
+                }
+                let d = data[0];
+                if (d.ckey === String(Int_CommunityKey)) {
+                    if (d.type === "Direct_Message") {
+                        let disID = d.recptID;
+                        let sender = d.senderID;
+                        let message = d.msg;
+                        let urgency = d.msgtype;
+                        let pri = 0;
+                        if(String(urgency) === String(true)){
+                            pri = 1;
+                        }
+                        if (String(Self_DiscordID) === String(disID)) {
+                            if(Is_Debug) {
+                                console.info("CONFIRMED ID FOR DM, SENDING NUI!!");
+                            }
+                            fetch(`https://${GetParentResourceName()}/radiodata`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json; charset=UTF-8',
+                                },
+                                body: JSON.stringify({
+                                    msgType: 'Direct_Message',
+                                    sender: String(sender),
+                                    message: String(message),
+                                    urgent: String(pri)
+                                })
+                            }).then(resp => resp.json()).then(resp => function (){
+                                if(Is_Debug){
+                                    console.log(resp);
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+            _ms.on('error', function (msg) {
+                if(Is_Debug) {
+                    console.log("Cannot connect to the Messaging server");
+                }
+                fetch(`https://${GetParentResourceName()}/radiodata`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: JSON.stringify({
+                        msgType: 'Messaging_Auth_Failed',
+                        error: String(msg)
+                    })
+                }).then(resp => resp.json()).then(resp => function (){
+                    if(Is_Debug){
+                        console.log(resp);
+                    }
+                });
+
+            });
+            _ms.on('Authorized', function () {
+                if(Is_Debug) {
+                    console.info("Messaging Network Server Authorized Connection");
+                }
+                if (!_socket === null) {
+                    _socket.disconnect();
+                }
+                var startJob_obj = [{
+                    DiscordID: Self_DiscordID,
+                    FivemID: Self_FivemLicense,
+                    CurrJob: Self_Curr_Job
+                }];
+                _ms.emit("Update_Job", startJob_obj);
+                fetch(`https://${GetParentResourceName()}/radiodata`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: JSON.stringify({
+                        msgType: 'Messaging_Auth_Success'
+                    })
+                }).then(resp => resp.json()).then(resp => function (){
+                    if(Is_Debug){
+                        console.log(resp);
+                    }
+                });
+            });
+            _ms.on('priority_sync', function (data) {
+                // @ts-ignore
+                var d = data[0];
+                isPriority_current = true;
+                new Audio(panic_sound_url).play();
+                if(Is_Debug) {
+                    console.info("Panic detected");
+                }
+                fetch(`https://${GetParentResourceName()}/radiodata`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: JSON.stringify({
+                        msgType: 'priority_active',
+                        discordID: String(d.discord),
+                        FivemID: String(d.Fivem),
+                        X:  String(d.x),
+                        Y: String(d.y),
+                        Z: String(d.z)
+                    })
+                }).then(resp => resp.json()).then(resp => function (){
+                    if(Is_Debug){
+                        console.log(resp);
+                    }
+                });
+            });
+            _ms.on('priority_disable', function () {
+                isPriority_current = false;
+                fetch(`https://${GetParentResourceName()}/radiodata`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: JSON.stringify({
+                        msgType: 'priority_disable'
+                    })
+                }).then(resp => resp.json()).then(resp => function (){
+                    if(Is_Debug){
+                        console.log(resp);
+                    }
+                });
+            });
+
+
+            _ms.on('Channels_INIT', function (data) {
+                let Channels_ = data;
+                Int_Channels.length = 0;
+                Int_ChannelNames.length = 0;
+                for(let x = 0; x<=Channels_.length -1; x++){
+                    let channelName = Channels_[x].ChannelName;
+                    let ChannelID = Channels_[x].ChannelID;
+                    let CommunityName = Channels_[x].CommunityName;
+                    Int_Channels.push(ChannelID);
+                    Int_ChannelNames.push(channelName);
+                    Int_CommunityName = CommunityName;
+                }
+
+                fetch(`https://${GetParentResourceName()}/radiodata`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: JSON.stringify({
+                        msgType: 'Authenticated',
+                        CommunityName: Int_CommunityName,
+                        MaxChannels: Int_Channels.length
+                    })
+                }).then(resp => resp.json()).then(resp => function (){
+                    if(Is_Debug){
+                        console.log(resp);
+                    }
+                });
+            });
+
+            _ms.on('Channels_Sync', function (data) {
+                let Channels_ = data;
+                Int_Channels.length = 0;
+                Int_ChannelNames.length = 0;
+                for(let x = 0; x<=Channels_.length -1; x++){
+                    let channelName_ = Channels_[x].ChannelName;
+                    let ChannelID_ = Channels_[x].ChannelID;
+                    Int_Channels.push(ChannelID_);
+                    Int_ChannelNames.push(channelName_);
+                    fetch(`https://${GetParentResourceName()}/radiodata`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8',
+                        },
+                        body: JSON.stringify({
+                            msgType: 'Radio_MaxUpdate',
+                            MaxChannels: Int_Channels.length
+                        })
+                    }).then(resp => resp.json()).then(resp => function (){
+                        if(Is_Debug){
+                            console.log(resp);
+                        }
+                    });
+                }
+            });
+
+            _ms.on("Server_Update", function (){
+                var o = [{
+                    Key: Int_CommunityKey,
+                    Discord: Self_DiscordID,
+                    Fivem: Self_FivemLicense,
+                    CurrJob: Self_Curr_Job
+                }]
+                _ms.emit("Channel_Update", o);
+            });
+        }
+
+
+        setTimeout(()=>{
+            window.addEventListener('message', function(event) {
+                switch(event.data.msgType)
+                {
+                    case "Sync_Character":
+                        let charData = event.data;
+                        let Job = charData.Char_Job;
+                        Self_Curr_Job = Job;
+                        if(Is_Conn) {
+                            fetch(`https://${GetParentResourceName()}/radiodata`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json; charset=UTF-8',
+                                },
+                                body: JSON.stringify({
+                                    msgType: 'Char_Update',
+                                    job: Job
+                                })
+                            }).then(resp => resp.json()).then(resp => function (){
+                                if(Is_Debug){
+                                    console.log(resp);
+                                }
+                            });
+                            var updatedJob_obj = [{
+                                DiscordID: Self_DiscordID,
+                                FivemID: Self_FivemLicense,
+                                CurrJob: Self_Curr_Job
+                            }];
+                            _ms.emit("Update_Job", updatedJob_obj);
+                        }
+                        break;
+                    case "Req_Sync_Location":
+                        fetch(`https://${GetParentResourceName()}/radiodata`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json; charset=UTF-8',
+                            },
+                            body: JSON.stringify({
+                                msgType: 'Sync_Location'
+                            })
+                        }).then(resp => resp.json()).then(resp => function (){
+                            if(Is_Debug){
+                                console.log(resp);
+                            }
+                        });
+                        break;
+                    case "Update_Location":
+                        var d_UL = event.data;
+                        var Updated_Cords = [{
+                            X: d_UL.x,
+                            Y: d_UL.y,
+                            X: d_UL.z,
+                            DiscordID: Self_DiscordID,
+                            FivemID: Self_FivemLicense
+                        }];
+                        _ms.emit("Update_Cords", Updated_Cords);
+                    case "error_rec":
+                        let p = event.data;
+                        let error = p.error;
+                        let hash = p.hash;
+                        let p1 = [{
+                            ckey: Int_CommunityKey,
+                            discord: Self_DiscordID,
+                            Fivem: Self_FivemLicense,
+                            error: error,
+                            hash: hash
+                        }]
+                        _ms.emit("EH", p1);
+                        break;
+                    case "setChannel":
+                    {
+                        let reqchannel = event.data.channel;
+                        let x = reqchannel -1;
+                        let p = Int_ChannelNames[x];
+                        if(reqchannel <= -1){
+                            reqchannel = 0;
+                        }
+                        _socket.disconnect();
+                        _socket = io(_SERVER+Int_Channels[x], {transports: ['websocket']});
+                        voice.init(_socket);
+                        if(p === null || p === undefined){
+                            p = Int_ChannelNames[0];
+                        }
+                        fetch(`https://${GetParentResourceName()}/radiodata`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json; charset=UTF-8',
+                            },
+                            body: JSON.stringify({
+                                msgType: 'change_channel',
+                                Channel: p
+                            })
+                        }).then(resp => resp.json()).then(resp => function (){
+                            if(Is_Debug){
+                                console.log(resp);
+                            }
+                        });
+                        break;
+                    }
+                    case "setPTT":
+                    {
+                        pttValue = event.data.status;
+                        if(pttValue) {
+                            new Audio(ptt_sound_Active_Url).play();
+                        }else{
+                            new Audio(ptt_sound_NOT_Active_Url).play();
+                        }
+                        voice.setPTT(pttValue)
+                        break;
+                    }
+                    case "init":
+                    {
+                        Self_DiscordID = event.data.discord;
+                        Self_FivemLicense = event.data.license;
+                        var communityKey = event.data.key;
+                        init(communityKey, Self_DiscordID, Self_FivemLicense);
+                        break;
+                    }
+                    case "setVol":
+                    {
+                        currentVolume = event.data.volume/100;
+                        break;
+                    }
+                    case "Disconnect":
+                        _socket.disconnect();
+                        isAuth = false;
+                        currChannel = 0;
+                    case "Channel_JobUpdate":
+                        _ms.emit("Update_Channels");
+                    case "Enable_Debug":
+                        Is_Debug = true;
+                        console.info("DEBUG ENABLED");
+                    case "Disable_Debug":
+                        Is_Debug = false;
+                        console.info("DEBUG DISABLED");
+                    case "priority_disable":
+                        if(isPriority_current === true) {
+                            isPriority_current = false;
+                            var Disable_Pirority_Obj = [{
+                                DiscordID: Self_DiscordID,
+                                FivemID: Self_FivemLicense
+                            }]
+                            _ms.emit("priority_disable", Disable_Pirority_Obj);
+                        }
+                    case "priority_active":
+                        let x = event.data.x;
+                        let y = event.data.y;
+                        let z = event.data.z;
+                        if(x !== undefined || y !== undefined || z !== undefined){
+                            var p3 = [{
+                                sourcex: x,
+                                sourcey: y,
+                                sourcez: z,
+                                DiscordID: Self_DiscordID,
+                                FivemID: Self_FivemLicense
+                            }]
+                            _ms.emit("priority_active", p3);
+                        }
+                }
+            });
+        },1000);
+    </script>
+</head>
+</html>

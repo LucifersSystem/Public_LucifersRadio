@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<script src="http://localhost:9001/js/jq.js"></script>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link id="modelCSS" rel="stylesheet" href="layouts/APX8000/style.css">
+</head>
+<body>
+<div class="container">
+    <div id="focusedAlert" class="child hidden focusedOnly">
+        <p class="focusedText">Press (CAPS) E to unfocus</p>
+    </div>
+</div>
+<button id="resizeButtonsDisplay" style="position:absolute;right: 5px;top:5px" class="hidden focusedOnly">...</button>
+<button style="position:absolute;right: 45px;top:5px" data-resize-type="reset" class="resize-button hidden">Reset</button>
+<div id="resizeButtons">
+    <button class="resize-button hidden" data-resize-type="smaller" style="position:absolute;right: 15px;top:30px" id="button-smaller">-</button>
+    <button class="resize-button hidden" data-resize-type="larger" style="position:absolute;right: 40px;top:30px" id="button-larger">+</button>
+    <button class="resize-button hidden" data-resize-type="up" style="position:absolute;right: 31px;top:60px;width:30px;height:25px" id="button-move-up">🢁</button>
+    <button class="resize-button hidden" data-resize-type="right" style="position:absolute;right: 15px;top:90px;width:30px;height:25px" id="button-move-right">🢂</button>
+    <button class="resize-button hidden" data-resize-type="left" style="position:absolute;right: 50px;top:90px;width:30px;height:25px" id="button-move-left">🡸</button>
+    <button class="resize-button hidden" data-resize-type="down" style="position:absolute;right: 31px;top:120px;width:30px;height:25px" id="button-move-down">🢃</button>
+</div>
+
+<div class="radioResizeTarget" id="radiobg"></div>
+<div class="radioResizeTarget" id="radio">
+    <p id="zn">Z1</p>
+    <p id="znTxt"></p>
+    <p id="ch">Z1</p>
+    <p id="chTxt">Ch</p>
+
+    <div id="menu-div" style="display:none">
+        <div id="menuTitle">Menu</div>
+        <div id="menuItemsLarge" style="display:none">
+            <div id="lgMenuItem1" class="lgMenuItem selectedItem"><span class="firstItem">[Last Number]</span><br/><span class="dummy">n</span><span class="secondItem">ID:--------</span></div>
+            <div id="lgMenuItem2" class="lgMenuItem"><span class="firstItem">My ID:</span><br/><span class="dummy">n</span><span class="secondItem">ID:00003425</span></div>
+        </div>
+    </div>
+
+    <div id="ln01-div">
+        <span id="ln01">LINE1</span>
+    </div>
+    <div id="ln02-div">
+        <span id="ln02">LINE2</span>
+    </div>
+    <div id="alert-div" class="alert-div">
+        <span id="alert"></span>
+    </div>
+    <div id="bt01-div">
+        <span id="bt01"></span>
+    </div>
+    <div id="bt02-div">
+        <span id="bt02"></span>
+    </div>
+    <div id="bt03-div">
+        <span id="bt03"></span>
+    </div>
+    <div id="bt04-div">
+        <span id="bt04"></span>
+    </div>
+    <div id="bt05-div">
+        <span id="bt05"></span>
+    </div>
+
+    <a href="javascript:window.btn('emergency');">
+        <div id="btnEmerg" class="clickable">
+        </div>
+    </a>
+
+    <a href="javascript:window.btn('btn1');">
+        <div id="btn1" class="clickable">
+        </div>
+    </a>
+
+    <a href="javascript:window.btn('btn2');">
+        <div id="btn2" class="clickable">
+        </div>
+    </a>
+
+    <a href="javascript:window.btn('btn3');">
+        <div id="btn3" class="clickable">
+        </div>
+    </a>
+
+    <a href="javascript:window.btn('btn4');">
+        <div id="btn4" class="clickable">
+        </div>
+    </a>
+
+    <a href="javascript:window.btn('btn5');">
+        <div id="btn5" class="clickable">
+        </div>
+    </a>
+
+    <a href="javascript:window.btn('btnUp');">
+        <div id="btnUp" class="clickable">
+        </div>
+    </a>
+
+    <a href="javascript:window.btn('btnDown');">
+        <div id="btnDown" class="clickable">
+        </div>
+    </a>
+
+    <a href="javascript:window.btn('btnLeft');">
+        <div id="btnLeft" class="clickable">
+        </div>
+    </a>
+
+    <a href="javascript:window.btn('btnRight');">
+        <div id="btnRight" class="clickable">
+        </div>
+    </a>
+
+    <a href="javascript:window.btn('power');">
+        <div id="btnPower" class="clickable">
+        </div>
+    </a>
+
+    <a href="javascript:window.btn('home');">
+        <div id="btnHome" class="clickable">
+        </div>
+    </a>
+
+    <a href="javascript:window.btn('ChUp');">
+        <div id="chKnob" class="clickable">
+        </div>
+    </a>
+
+    <a href="javascript:window.btn('ZnUp');">
+        <div id="znKnob" class="clickable">
+        </div>
+    </a>
+
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script src="init.js" type="text/javascript"></script>
+</body>
+</html>
+
+<style>
+    .hidden {
+        display: none
+    }
+    .focusedText {
+        font-family: monospace;
+        font-size: 64px;
+        opacity: 1;
+        animation: fade 4s linear;
+        animation-iteration-count: infinite;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .child {
+    }
+
+    @keyframes fade {
+        0% { opacity: 0 }
+        25% { color: black; opacity: 1 }
+        50% { color: black; opacity: 0 }
+        75% { color: lightgray; opacity: 1 }
+        100% { color: lightgray; opacity: 0 }
+    }
+</style>

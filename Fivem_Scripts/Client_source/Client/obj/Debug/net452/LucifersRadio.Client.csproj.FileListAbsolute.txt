@@ -1,0 +1,10 @@
+D:\vsprojects\LucifersRadio\Client\bin\Debug\net452\LucifersRadio.Client.net.dll
+D:\vsprojects\LucifersRadio\Client\bin\Debug\net452\CitizenFX.Core.Client.dll
+D:\vsprojects\LucifersRadio\Client\obj\Debug\net452\LucifersRadio.Client.csproj.AssemblyReference.cache
+D:\vsprojects\LucifersRadio\Client\obj\Debug\net452\LucifersRadio.Client.GeneratedMSBuildEditorConfig.editorconfig
+D:\vsprojects\LucifersRadio\Client\obj\Debug\net452\LucifersRadio.Client.AssemblyInfoInputs.cache
+D:\vsprojects\LucifersRadio\Client\obj\Debug\net452\LucifersRadio.Client.AssemblyInfo.cs
+D:\vsprojects\LucifersRadio\Client\obj\Debug\net452\LucifersRadio.Client.csproj.CoreCompileInputs.cache
+D:\vsprojects\LucifersRadio\Client\obj\Debug\net452\LucifersRadio.Client.csproj.CopyComplete
+D:\vsprojects\LucifersRadio\Client\obj\Debug\net452\LucifersRadio.Client.net.dll
+D:\vsprojects\LucifersRadio\Client\bin\Debug\net452\Newtonsoft.Json.dll

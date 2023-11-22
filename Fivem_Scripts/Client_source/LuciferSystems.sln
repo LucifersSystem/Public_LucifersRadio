@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34202.233
+MinimumVisualStudioVersion = 15.0.26124.0
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LuciferSystems.Client", "Client\LuciferSystems.Client.csproj", "{1A8224D2-F904-4BA6-9236-9AE24356F8B0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LuciferSystems.Server", "Server\LuciferSystems.Server.csproj", "{82447ACF-6612-49C9-AF5B-AAA102C153C3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A8224D2-F904-4BA6-9236-9AE24356F8B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A8224D2-F904-4BA6-9236-9AE24356F8B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A8224D2-F904-4BA6-9236-9AE24356F8B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A8224D2-F904-4BA6-9236-9AE24356F8B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82447ACF-6612-49C9-AF5B-AAA102C153C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82447ACF-6612-49C9-AF5B-AAA102C153C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82447ACF-6612-49C9-AF5B-AAA102C153C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82447ACF-6612-49C9-AF5B-AAA102C153C3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {17D234D1-F86D-42D3-9CB5-92C7B45C39D1}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,29 @@
+{
+  "token": "",
+  "clientId": "",
+  "guildId": "",
+  "Community_Name": "Demo RP",
+  "Community_AuthKey": "383348438tr3vjfddhje@78754345hgyugb",
+  "Community_Owner": "662529839332327424",
+  "SystemLogs_ChannelID": "1141428623086190732",
+  "ClientError_Logs_ChannelID": "1141428623086190732",
+  "SQLHOST": "localhost",
+  "SQLUSERNAME": "root",
+  "SQLPASS": "",
+  "SQLDB_NAME": "lucifersradio",
+  "Privatekey_name": "server.key",
+  "Cert_name": "cert.crt",
+  "CA_CERT_name": "cacert.cer",
+  "HTTPS_port": 9000,
+  "HTTP_port": 9001,
+  "CIVJOBS": [
+    "unemployed"
+  ],
+  "RESCUEJOBS": [
+    "fire",
+    "ems"
+  ],
+  "LEOJOBS": [
+    "police"
+  ]
+}

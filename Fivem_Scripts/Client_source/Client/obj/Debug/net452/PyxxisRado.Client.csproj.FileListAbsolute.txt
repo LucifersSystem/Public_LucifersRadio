@@ -1,0 +1,20 @@
+D:\vsprojects\#ObeyPyxxi-Radio\Client\bin\Debug\net452\PyxxisRado.Client.net.dll
+D:\vsprojects\#ObeyPyxxi-Radio\Client\bin\Debug\net452\CitizenFX.Core.Client.dll
+D:\vsprojects\#ObeyPyxxi-Radio\Client\bin\Debug\net452\Newtonsoft.Json.dll
+D:\vsprojects\#ObeyPyxxi-Radio\Client\obj\Debug\net452\PyxxisRado.Client.csproj.AssemblyReference.cache
+D:\vsprojects\#ObeyPyxxi-Radio\Client\obj\Debug\net452\PyxxisRado.Client.GeneratedMSBuildEditorConfig.editorconfig
+D:\vsprojects\#ObeyPyxxi-Radio\Client\obj\Debug\net452\PyxxisRado.Client.AssemblyInfoInputs.cache
+D:\vsprojects\#ObeyPyxxi-Radio\Client\obj\Debug\net452\PyxxisRado.Client.AssemblyInfo.cs
+D:\vsprojects\#ObeyPyxxi-Radio\Client\obj\Debug\net452\PyxxisRado.Client.csproj.CoreCompileInputs.cache
+D:\vsprojects\#ObeyPyxxi-Radio\Client\obj\Debug\net452\PyxxisRado.Client.csproj.CopyComplete
+D:\vsprojects\#ObeyPyxxi-Radio\Client\obj\Debug\net452\PyxxisRado.Client.net.dll
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Client\bin\Debug\net452\PyxxisRado.Client.net.dll
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Client\bin\Debug\net452\CitizenFX.Core.Client.dll
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Client\bin\Debug\net452\Newtonsoft.Json.dll
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Client\obj\Debug\net452\PyxxisRado.Client.csproj.AssemblyReference.cache
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Client\obj\Debug\net452\PyxxisRado.Client.GeneratedMSBuildEditorConfig.editorconfig
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Client\obj\Debug\net452\PyxxisRado.Client.AssemblyInfoInputs.cache
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Client\obj\Debug\net452\PyxxisRado.Client.AssemblyInfo.cs
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Client\obj\Debug\net452\PyxxisRado.Client.csproj.CoreCompileInputs.cache
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Client\obj\Debug\net452\PyxxisRado.Client.csproj.CopyComplete
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Client\obj\Debug\net452\PyxxisRado.Client.net.dll

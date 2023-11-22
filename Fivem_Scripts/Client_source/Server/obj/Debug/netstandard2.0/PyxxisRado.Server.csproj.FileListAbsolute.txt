@@ -1,0 +1,20 @@
+D:\vsprojects\#ObeyPyxxi-Radio\Server\bin\Debug\netstandard2.0\PyxxisRado.Server.deps.json
+D:\vsprojects\#ObeyPyxxi-Radio\Server\bin\Debug\netstandard2.0\PyxxisRado.Server.net.dll
+D:\vsprojects\#ObeyPyxxi-Radio\Server\bin\Debug\netstandard2.0\PyxxisRado.Server.net.pdb
+D:\vsprojects\#ObeyPyxxi-Radio\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.csproj.AssemblyReference.cache
+D:\vsprojects\#ObeyPyxxi-Radio\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.GeneratedMSBuildEditorConfig.editorconfig
+D:\vsprojects\#ObeyPyxxi-Radio\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.AssemblyInfoInputs.cache
+D:\vsprojects\#ObeyPyxxi-Radio\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.AssemblyInfo.cs
+D:\vsprojects\#ObeyPyxxi-Radio\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.csproj.CoreCompileInputs.cache
+D:\vsprojects\#ObeyPyxxi-Radio\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.net.dll
+D:\vsprojects\#ObeyPyxxi-Radio\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.net.pdb
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Server\bin\Debug\netstandard2.0\PyxxisRado.Server.deps.json
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Server\bin\Debug\netstandard2.0\PyxxisRado.Server.net.dll
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Server\bin\Debug\netstandard2.0\PyxxisRado.Server.net.pdb
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.csproj.AssemblyReference.cache
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.GeneratedMSBuildEditorConfig.editorconfig
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.AssemblyInfoInputs.cache
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.AssemblyInfo.cs
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.csproj.CoreCompileInputs.cache
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.net.dll
+D:\GIT PROJECTS\pyxxi - Radio Server\CLIENT_FFIVEMSCRIPT\Client_source\Server\obj\Debug\netstandard2.0\PyxxisRado.Server.net.pdb

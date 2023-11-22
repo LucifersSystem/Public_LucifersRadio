@@ -1,0 +1,257 @@
+@font-face {
+    font-family: 'EFJ';
+    src: url('./fonts/EFJFont.ttf');
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+#zn {
+    position: absolute;
+    font-family: "EFJ";
+    font-weight: bolder;
+    font-size: 35px;
+    margin-top: 50px;
+    margin-left: 100px;
+    color: #282828;
+}
+
+#ch {
+    position: absolute;
+    font-family: "EFJ";
+    font-weight: bolder;
+    font-size: 35px;
+    margin-top: 50px;
+    margin-left: 150px;
+    color: #282828;
+}
+
+#ln01 {
+    position: absolute;
+    font-family: "EFJ";
+    font-weight: bolder;
+    font-size: 25px;
+    margin-top: 40px;
+    margin-left: 250px;
+    color: #282828;
+}
+
+#ln02 {
+    position: absolute;
+    font-family: "EFJ";
+    font-weight: bolder;
+    font-size: 25px;
+    margin-top: 70px;
+    margin-left: 250px;
+    color: #282828;
+}
+
+#sySec {
+	display: none;
+    position: absolute;
+    font-family: "EFJ";
+    font-weight: bolder;
+    font-size: 20px;
+    margin-top: 40px;
+    margin-left: 500px;
+    color: #282828;
+}
+
+#syScan {
+	display: none;
+    position: absolute;
+    font-family: "EFJ";
+    font-weight: bolder;
+    font-size: 20px;
+    margin-top: 40px;
+    margin-left: 530px;
+    color: #282828;
+}
+
+#syRssi {
+	display: none;
+    position: absolute;
+    font-family: "EFJ";
+    font-weight: bolder;
+    font-size: 25px;
+    margin-top: 42px;
+    margin-left: 560px;
+    color: #282828;
+}
+
+#bt01 {
+    position: absolute;
+    font-family: "EFJ";
+    font-weight: bolder;
+    font-size: 20px;
+    margin-top: 95px;
+    margin-left: 160px;
+    color: #282828;
+}
+
+#bt02 {
+    position: absolute;
+    font-family: "EFJ";
+    font-weight: bolder;
+    font-size: 20px;
+    margin-top: 95px;
+    margin-left: 235px;
+    color: #282828;
+}
+
+#bt03 {
+    position: absolute;
+    font-family: "EFJ";
+    font-weight: bolder;
+    font-size: 20px;
+    margin-top: 95px;
+    margin-left: 310px;
+    color: #282828;
+}
+
+#bt04 {
+    position: absolute;
+    font-family: "EFJ";
+    font-weight: bolder;
+    font-size: 20px;
+    margin-top: 95px;
+    margin-left: 385px;
+    color: #282828;
+}
+
+#bt05 {
+    position: absolute;
+    font-family: "EFJ";
+    font-weight: bolder;
+    font-size: 20px;
+    margin-top: 95px;
+    margin-left: 465px;
+    color: #282828;
+}
+
+#radio {
+position: absolute;
+    right: 50px;
+    bottom: 50px;
+    height: 150px;
+    width: 750px;
+    margin-top: 38%;
+    background: url("APX8000.png");
+      background-repeat: no-repeat;
+  background-size: contain;
+}
+
+#btnEmerg {
+    position: absolute;
+    left: 27px;
+    bottom: 56px;
+    width: 20px;
+    height: 28px;
+}
+
+#btn1
+{
+    position: absolute;
+    left: 149px;
+    bottom: 7px;
+    width: 57px;
+    height: 26px;
+}
+
+
+
+#btn2
+{
+    position: absolute;
+    left: 225px;
+    bottom: 7px;
+    width: 57px;
+    height: 26px;
+}
+
+#btn3
+{
+    position: absolute;
+    left: 305px;
+    bottom: 7px;
+    width: 57px;
+    height: 26px;
+}
+
+#btn4
+{
+    position: absolute;
+    left: 381px;
+    bottom: 7px;
+    width: 57px;
+    height: 26px;
+}
+
+#btn5
+{
+    position: absolute;
+    left: 461px;
+    bottom: 7px;
+    width: 57px;
+    height: 26px;
+}
+
+#btnUp
+{
+    position: absolute;
+    left: 629px;
+    bottom: 84px;
+    width: 27px;
+    height: 20px;
+}
+
+#btnDown
+{
+    position: absolute;
+    left: 629px;
+    bottom: 39px;
+    width: 27px;
+    height: 20px;
+}
+
+#btnLeft
+{
+    position: absolute;
+    left: 614px;
+    bottom: 58px;
+    width: 20px;
+    height: 27px;
+}
+
+#btnRight
+{
+    position: absolute;
+    left: 652px;
+    bottom: 58px;
+    width: 20px;
+    height: 27px;
+}
+
+#rgled
+{
+    position: absolute;
+    left: 639px;
+    bottom: 66px;
+    width: 8px;
+    height: 10px;
+}
+
+
+#small-text {
+    font-size: 10px;
+}
+
+
+#smaller-text {
+    font-size: 8px;
+}
+

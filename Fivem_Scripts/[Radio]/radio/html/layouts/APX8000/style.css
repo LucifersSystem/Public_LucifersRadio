@@ -1,0 +1,580 @@
+@font-face {
+    font-family: 'nimbus_sans_lbold';
+    src: url('fonts/NimbusSanL-Bol-webfont.eot');
+    src: url('fonts/NimbusSanL-Bol-webfont.eot?#iefix') format('embedded-opentype'),
+    url('fonts/NimbusSanL-Bol-webfont.woff2') format('woff2'),
+    url('fonts/NimbusSanL-Bol-webfont.woff') format('woff'),
+    url('fonts/NimbusSanL-Bol-webfont.ttf') format('truetype'),
+    url('fonts/NimbusSanL-Bol-webfont.svg#nimbus_sans_lbold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+@font-face {
+    font-family: 'nimbusantbolconregular';
+    src: url('fonts/nimbussanst-boldcondensed-webfont.woff2') format('woff2'),
+    url('fonts/nimbussanst-boldcondensed-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+#zn {
+    display:none;
+}
+
+#znTxt {
+    display:none;
+}
+
+#ch {
+    display:none;
+}
+
+#chTxt {
+    display:none;
+}
+
+
+#ln01-div
+{
+    position: absolute;
+    top: 259px;
+    left: 54px;
+    width: 75px;
+    height: 24px;
+    text-align: center;
+}
+
+#ln01 {
+    font-family: "nimbusantbolconregular";
+    font-size: 10pt;
+    margin-top: 0;
+    margin-left: 0;
+    vertical-align: top;
+    color: #282828;
+}
+
+#ln02-div
+{
+    position: absolute;
+    top: 272px;
+    left: 54px;
+    width: 75px;
+    height: 24px;
+    text-align: center;
+}
+
+#ln02 {
+    font-family: "nimbus_sans_lbold";
+    font-size: 12px;
+    margin-top: 0;
+    margin-left: 0;
+    vertical-align: top;
+    color: #282828;
+}
+
+#alert-div
+{
+    position: absolute;
+    top: 286px;
+    left: 55px;
+    width: 74px;
+    height: 16px;
+    text-align: center;
+}
+
+#alert {
+    font-family: "nimbus_sans_lbold";
+    margin-top: 0;
+    margin-left: 0;
+    font-size: 12px;
+    vertical-align: top;
+    z-index: 100;
+}
+
+#menu-div{
+    font-family: "nimbus_sans_lbold";
+    background-color: #C6D5C2;
+    position: absolute;
+    top: 241px;
+    left: 55px;
+    width: 74px;
+    height: 51px;
+    z-index: 1;
+}
+
+#menuTitle {
+    background-color: #44416fba;
+    width: 74px;
+    font-size: 7pt;
+    color: white;
+}
+
+.lgMenuItem {
+    font-size: 7pt;
+    padding-right: 4px;
+}
+
+.firstItem {
+        
+}
+.secondItem {
+    font-family: "nimbusantbolconregular";
+    float: right;
+}
+.dummy{
+    color:#C6D5C2;
+}
+.selectedItem .dummy{
+    color:dodgerblue;
+}
+
+.selectedItem {
+    background-color: dodgerblue;
+}
+
+.alert-none {
+    color: #212121;
+    background-color: #C6D5C2;
+}
+
+.alert-red{
+    color: white;
+    background-color: red;
+}
+.alert-yellow{
+    color: #282828;
+    background-color: yellow;
+}
+.alert-orange{
+    color: #282828;
+    background-color: orange;
+}
+.alert-blue{
+    color: white;
+    background-color: blue;
+}
+
+.alert-green{
+    color: white;
+    background-color: green;
+}
+
+
+
+#bt01-div {
+    position: absolute;
+    top: 304px;
+    left: 54px;
+    width: 25px;
+    height: 11px;
+    text-align: center;
+    background: #44416fba;
+    border-right: black;
+    border-right-width: thin;
+    border-right-style: solid;
+}
+
+#bt01 {
+    font-family: "nimbus_sans_lbold";
+    font-size: 9px;
+    text-transform: capitalize;
+    font-weight: bold;
+    margin-top: 0;
+    margin-left: 0;
+    vertical-align: top;
+    color: white;
+    text-overflow: clip;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#bt02-div
+{
+    position: absolute;
+    top: 304px;
+    left: 79px;
+    width: 25px;
+    height: 11px;
+    text-align: center;
+    background: #44416fba;
+    border-right: black;
+    border-right-width: thin;
+    border-right-style: solid;
+}
+
+#bt02 {
+    font-family: "nimbus_sans_lbold";
+    font-size: 9px;
+    text-transform: capitalize;
+    font-weight: bold;
+    margin-top: 0;
+    margin-left: 0;
+    vertical-align: top;
+    color: white;
+    text-overflow: clip;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#bt03-div
+{
+    position: absolute;
+    top: 304px;
+    left: 104px;
+    width: 25px;
+    height: 11px;
+    text-align: center;
+    background: #44416fba;
+}
+
+#bt03 {
+    font-family: "nimbus_sans_lbold";
+    font-size: 9px;
+    text-transform: capitalize;
+    font-weight: bold;
+    margin-top: 0;
+    margin-left: 0;
+    vertical-align: top;
+    color: white;
+    text-overflow: clip;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#bt04-div
+{
+    display:none;
+}
+
+#bt04 {
+    display:none;
+}
+
+#bt05-div
+{
+    display:none;
+}
+
+#bt05 {
+    display:none;
+}
+#radiobg {
+    position: absolute;
+    right: 50px;
+    bottom: 0px;
+    height: 406px;
+    width: 300px;
+    display: none;
+    background: url(APX8000.png) no-repeat;
+    background-size: contain;
+}
+
+#radio {
+    position: absolute;
+    right: 48px;
+    bottom: -8px;
+    height: 406px;
+    width: 300px;
+}
+
+#btnEmerg {
+    position: absolute;
+    left: 42px;
+    top: 167px;
+    width: 21px;
+    height: 10px;
+}
+
+#btnHome {
+    position: absolute;
+    left: 42px;
+    top: 352px;
+    width: 21px;
+    height: 40px;
+}
+
+#btn1
+{
+    position: absolute;
+    left: 53px;
+    top: 330px;
+    width: 24px;
+    height: 16px;
+}
+
+
+
+#btn2
+{
+    position: absolute;
+    left: 80px;
+    top: 330px;
+    width: 24px;
+    height: 16px;
+}
+
+#btn3 {
+    position: absolute;
+    left: 107px;
+    top: 330px;
+    width: 24px;
+    height: 16px;
+}
+
+#btn4
+{
+    display:none;
+}
+
+#btn5
+{
+    display:none;
+}
+
+#btnUp
+{
+    position: absolute;
+    left: 82px;
+    top: 357px;
+    width: 20px;
+    height: 20px;
+}
+
+#btnDown
+{
+    position: absolute;
+    left: 82px;
+    top: 376px;
+    width: 20px;
+    height: 20px;
+}
+
+#btnLeft
+{
+    position: absolute;
+    left: 66px;
+    top: 357px;
+    width: 21px;
+    height: 30px;
+}
+
+#btnRight
+{
+    position: absolute;
+    left: 99px;
+    top: 357px;
+    width: 21px;
+    height: 30px;
+}
+
+#chKnob
+{
+    position: absolute;
+    left: 77px;
+    top: 127px;
+    width: 29px;
+    height: 20px;
+}
+
+#znKnob
+{
+    position: absolute;
+    left: 123px;
+    top: 164px;
+    width: 20px;
+    height: 20px;
+}
+
+
+#btnPower
+{
+    position: absolute;
+    left: 152px;
+    top: 142px;
+    width: 34px;
+    height: 23px;
+}
+
+#redLED
+{
+    display:none;
+}
+
+#orangeLED
+{
+    display:none;
+}
+
+#greenLED
+{
+    display:none;
+}
+
+#multiFunctionLED {
+    position: absolute;
+    left: 69px;
+    top: 163px;
+    width: 5px;
+    height: 5px;
+    z-index: -1;
+}
+
+#battery-icon-div {
+    position: absolute;
+    background-size: contain;
+    width: 14px;
+    height: 12px;
+    left: 120px;
+    top: 241px;
+    display:none;
+}
+
+
+#battery-icon-div.batt-1 {
+    background-size: contain;
+    background: url("icons/batt-1.png") no-repeat;
+}
+#battery-icon-div.batt-2 {
+    background-size: contain;
+    background: url("icons/batt-2.png") no-repeat;
+}
+#battery-icon-div.batt-3 {
+    background-size: contain;
+    background: url("icons/batt-3.png") no-repeat;
+}
+#battery-icon-div.batt-4 {
+    background-size: contain;
+    background: url("icons/batt-4.png") no-repeat;
+}
+#battery-icon-div.batt-low {
+    background-size: contain;
+    background: url("icons/batt-low.png") no-repeat;
+    animation: blinking 1s linear infinite;
+}
+
+@keyframes blinking {
+    100% {
+        opacity:100;
+    }
+    1%{
+        opacity:0;
+    }
+    49% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 100;
+    }
+}
+
+#rssi-icon-div {
+    position: absolute;
+    background: url("icons/rssi-0.png") no-repeat;
+    background-size: contain;
+    width: 40px;
+    height: 11px;
+    left: 55px;
+    top: 241px;
+    display:none;
+}
+
+
+#rssi-icon-div.rssi-0 {
+    background: url("icons/rssi-0.png") no-repeat;
+    background-size: contain;
+}
+
+#rssi-icon-div.rssi-1 {
+    background: url("icons/rssi-1.png") no-repeat;
+    background-size: contain;
+}
+
+#rssi-icon-div.rssi-2 {
+    background: url("icons/rssi-2.png") no-repeat;
+    background-size: contain;
+}
+
+#rssi-icon-div.rssi-3 {
+    background: url("icons/rssi-3.png") no-repeat;
+    background-size: contain;
+}
+
+#rssi-icon-div.rssi-4 {
+    background: url("icons/rssi-4.png") no-repeat;
+    background-size: contain;
+}
+
+#rssi-icon-div.rssi-tx {
+    background: url("icons/rssi-tx.png") no-repeat;
+    background-size: contain;
+}
+
+#rssi-icon-div.rssi-rx {
+    background: url("icons/rssi-rx.png") no-repeat;
+    background-size: contain;
+}
+
+#scan-icon-div {
+    position: absolute;
+    background: url("icons/scan.png") no-repeat;
+    background-size: contain;
+    width: 11px;
+    height: 14px;
+    left: 96px;
+    top: 243px;
+    display:none;
+}
+
+#secure-icon-div {
+    position: absolute;
+    background: url("icons/secure.png") no-repeat;
+    background-size: contain;
+    width: 11px;
+    height: 14px;
+    left: 83px;
+    top: 243px;
+    display:none;
+}
+
+#gps-icon-div {
+    position: absolute;
+    background: url("icons/gps.png") no-repeat;
+    background-size: contain;
+    width: 10px;
+    height: 40px;
+    left: 116px;
+    top: 254px;
+    display:none;
+}
+
+
+#direct-icon-div {
+    position: absolute;
+    background: url("icons/dir.png") no-repeat;
+    background-size: contain;
+    width: 11px;
+    height: 14px;
+    left: 72px;
+    top: 242px;
+    display:none;
+}
+
+.small-text {
+    font-size: 10px !important;
+}
+
+
+.smaller-text {
+    font-size: 8px !important;
+}

@@ -1,0 +1,10 @@
+D:\vsprojects\LucifersRadio\Server\bin\Debug\netstandard2.0\LucifersRadio.Server.deps.json
+D:\vsprojects\LucifersRadio\Server\bin\Debug\netstandard2.0\LucifersRadio.Server.net.dll
+D:\vsprojects\LucifersRadio\Server\bin\Debug\netstandard2.0\LucifersRadio.Server.net.pdb
+D:\vsprojects\LucifersRadio\Server\obj\Debug\netstandard2.0\LucifersRadio.Server.csproj.AssemblyReference.cache
+D:\vsprojects\LucifersRadio\Server\obj\Debug\netstandard2.0\LucifersRadio.Server.GeneratedMSBuildEditorConfig.editorconfig
+D:\vsprojects\LucifersRadio\Server\obj\Debug\netstandard2.0\LucifersRadio.Server.AssemblyInfoInputs.cache
+D:\vsprojects\LucifersRadio\Server\obj\Debug\netstandard2.0\LucifersRadio.Server.AssemblyInfo.cs
+D:\vsprojects\LucifersRadio\Server\obj\Debug\netstandard2.0\LucifersRadio.Server.csproj.CoreCompileInputs.cache
+D:\vsprojects\LucifersRadio\Server\obj\Debug\netstandard2.0\LucifersRadio.Server.net.dll
+D:\vsprojects\LucifersRadio\Server\obj\Debug\netstandard2.0\LucifersRadio.Server.net.pdb
