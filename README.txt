@@ -60,6 +60,7 @@ CREATE TABLE `radio_registeredchannels` (
   `communitykey` text NOT NULL,
   `channelID` int(11) NOT NULL,
   `channelName` text NOT NULL,
+  `job` text NOT NULL,
   `creatordiscordID` text NOT NULL,
   `date` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
