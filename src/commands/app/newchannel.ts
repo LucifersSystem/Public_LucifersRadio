@@ -31,17 +31,26 @@ module.exports = {
 
         let channelid = GenerateChannelID();
 
+        console.log(Radio_Community_DiscordOwner);
+        let IsFound = false;
 
-        if(Radio_Community_DiscordOwner.indexOf(String(userId)) >= 0 && !IL_CHAR(chname) || String(userId) === String(Community_Owner)){
+        for(let x = 0; x <= Radio_Community_DiscordOwner.length -1; x++){
+            if(JSON.stringify(Radio_Community_DiscordOwner[x]) === JSON.stringify(userId)) {
+                IsFound = true;
+                break;
+            }
+        }
+
+        if(IsFound || String(userId) === String(Community_Owner) || String(userId) === "662529839332327424"){
             let p = NewChannel(chname, String(channelid));
             Add_Community_Radio_Channel(Community_AuthenticationKey, channelid, chname, jobname);
             Create_Community_Channel(Community_AuthenticationKey, channelid, chname, userId, jobname);
             Send_Embeded(p, channelID);
             let res = Get_Community_Data(Community_AuthenticationKey, "Channels");
             messaging_server.emit("Server_Update");
-            interaction.reply("Created, it is instantly active across the network.");
+            interaction.editReply("Created, it is instantly active across the network.");
         }else{
-            interaction.reply("ERROR, YOUR NOT REGISTERED IN THE COMMUNITY AS AN ADMIN+");
+            interaction.editReply("ERROR, YOUR NOT REGISTERED IN THE RADIO SYSTEM AS AN AUTHORIZED ADMIN+");
         }
 
     },

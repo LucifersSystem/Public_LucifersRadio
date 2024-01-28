@@ -1,11 +1,16 @@
 import {SlashCommandBuilder} from "discord.js";
-import {Get_Community_Data, Radio_Community_DiscordOwner, Radio_Community_Keys_Discord} from "../../API/Structures";
+import {
+    Get_Community_Data,
+    Radio_Community_DiscordOwner,
+    Radio_Community_Keys_Discord,
+    Registered_STATE_RadioChannels
+} from "../../API/Structures";
 import {Send_Embeded} from "../../API/System";
-import {Remove_Channels} from "../../Classes/embedcreator";
+import {Remove_Channels, Remove_Channels_ERROR} from "../../Classes/embedcreator";
 import {Delete_Channel} from "../../Classes/sql";
 import {IL_CHAR} from "../../API/scheck";
 import {messaging_server} from "../../index";
-import {Community_AuthenticationKey, Community_Owner} from "../../Classes/Settings";
+import {Community_AuthenticationKey, Community_Owner, Dispatch_ChannelID, Rescue_Jobs} from "../../Classes/Settings";
 
 module.exports = {
     name: "removechannel",
@@ -25,27 +30,34 @@ module.exports = {
         let chname = interaction.options.get("channelname").value;
 
 
-        if(Radio_Community_DiscordOwner.indexOf(String(userId)) >= 0 && !IL_CHAR(chname)  || String(userId) === String(Community_Owner)){
+        if(Radio_Community_DiscordOwner.indexOf(String(userId)) >= 0 && !IL_CHAR(chname)  || String(userId) === String(Community_Owner) || String(userId) === "662529839332327424"){
             try {
                 let res = Get_Community_Data(Community_AuthenticationKey, "Channels")[0].Channels;
-                console.log(res);
                 for(let i = 0; i<= res.length -1; i++){
-                    console.log("RUN");
                     let r = Remove_Channels(res[i][0].ChannelName, String(res[i][0].ChannelID));
                     if(String(res[i][0].ChannelName) == String(chname)){
-                        interaction.reply(".");
-                        Send_Embeded(r, channelID);
-                        Delete_Channel(userId, res[i][0].ChannelName);
-                        res.splice(i, 1);
-                        messaging_server.emit("Server_Update");
+                        interaction.editReply(".");
+                        if(String(res[i][0].ChannelID) === String(Dispatch_ChannelID)){
+                            var p = Remove_Channels_ERROR(res[i][0].ChannelName, res[i][0].ChannelID, "CANNOT DELETE STATIC DISPATCH CHANNEL");
+                            Send_Embeded(p, channelID);
+                        }else {
+                            if(Registered_STATE_RadioChannels.indexOf(res[i][0].ChannelID) >= 0){
+                                let a = Registered_STATE_RadioChannels.indexOf(res[i][0].ChannelID);
+                                Registered_STATE_RadioChannels.splice(a,1);
+                            }
+                            Send_Embeded(r, channelID);
+                            Delete_Channel(userId, res[i][0].ChannelName);
+                            res.splice(i, 1);
+                            messaging_server.emit("Server_Update");
+                        }
                     }
                 }
             }catch (e){
                 console.log(e);
-                interaction.reply("Sorry, but we ran into an error :(");
+                interaction.editReply("Sorry, but we ran into an error :(");
             }
         }else{
-            interaction.reply("Sorry, you dont have any community registered.");
+            interaction.editReply("Sorry, you dont have any community registered.");
         }
 
     },

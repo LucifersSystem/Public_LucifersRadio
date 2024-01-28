@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Remove_Channels = exports.Print_Channels = exports.Add_newauthuser = exports.System_Status = exports.Emb_API_Req = exports.Emb_NO_CHANNELS = exports.Emb_Fivem_User_DENIED_CONNECTION = exports.Emb_Useralreadysynced = exports.Emb_Radio_User_STOP_Priority = exports.Emb_Radio_User_Start_Priority = exports.Emb_Radio_User_Job_Update = exports.Emb_Radio_User_BUG_CLIENT = exports.Emb_Radio_User_ERROR_CLIENT = exports.Emb_Fivem_User_SEND_Message = exports.Emb_Fivem_User_Connected = exports.Emb_Sync_User = exports.Api_Error = exports.NewChannel = void 0;
+exports.Remove_Channels_ERROR = exports.Remove_Channels = exports.Print_Channels = exports.Remove_authuser = exports.Add_newauthuser = exports.System_Status = exports.Emb_API_Req = exports.Emb_NO_CHANNELS = exports.Emb_Fivem_User_DENIED_CONNECTION = exports.Emb_Useralreadysynced = exports.Emb_Radio_User_STOP_Priority = exports.Emb_Radio_User_Start_Priority = exports.Emb_Radio_User_Job_Update = exports.Emb_Radio_User_BUG_CLIENT = exports.Emb_Radio_User_ERROR_CLIENT = exports.Emb_Fivem_User_SEND_Message = exports.Emb_MDT_DELCHAR = exports.Emb_MDT_NEWCHAR = exports.Emb_MDT_USERAPI_NOTSET = exports.Emb_MDT_USERNOT_FOUND = exports.Emb_Fivem_User_Connected = exports.Emb_Sync_User = exports.Api_Error = exports.NewChannel = void 0;
 var Settings_1 = require("./Settings");
 var EmbedBuilder = require('discord.js').EmbedBuilder;
 //THIS CLASS CONTAINS ALL THE DISCORD EMBEDS
 function NewChannel(channelName, ChanneID) {
     var Embed = new EmbedBuilder()
         .setColor(0x0099FF)
-        .setTitle(Settings_1.Community_Name + " Radio System")
+        .setTitle(Settings_1.Community_Name + " System")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -20,7 +20,7 @@ exports.NewChannel = NewChannel;
 function Api_Error(Error, Where) {
     var Embed = new EmbedBuilder()
         .setColor(0x0099FF)
-        .setTitle(Settings_1.Community_Name + " Radio System")
+        .setTitle(Settings_1.Community_Name + " System")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -33,7 +33,7 @@ exports.Api_Error = Api_Error;
 function Emb_Sync_User(userID, Username, status) {
     var Embed = new EmbedBuilder()
         .setColor(0x0099FF)
-        .setTitle(Settings_1.Community_Name + " Radio System")
+        .setTitle(Settings_1.Community_Name + " System")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -46,7 +46,7 @@ exports.Emb_Sync_User = Emb_Sync_User;
 function Emb_Fivem_User_Connected(FivemLicense, DiscordUserID) {
     var Embed = new EmbedBuilder()
         .setColor(0x0099FF)
-        .setTitle(Settings_1.Community_Name + " Radio System Fivem Notifications")
+        .setTitle(Settings_1.Community_Name + " System Fivem Notifications")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -56,10 +56,62 @@ function Emb_Fivem_User_Connected(FivemLicense, DiscordUserID) {
     return Embed;
 }
 exports.Emb_Fivem_User_Connected = Emb_Fivem_User_Connected;
+function Emb_MDT_USERNOT_FOUND(DiscordUserID) {
+    var Embed = new EmbedBuilder()
+        .setColor("#CC0000")
+        .setTitle(Settings_1.Community_Name + " System Notifications")
+        .setURL('https://lucifersapi.live')
+        .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
+        .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
+        .addFields({ name: 'Request: ', value: "Sync Community User", inline: true }, { name: 'Discord: ', value: "<@" + DiscordUserID + ">", inline: true }, { name: 'Status: ', value: "FAILED", inline: true }, { name: 'Error: ', value: "USER NOT FOUND", inline: false }, { name: 'Solution: ', value: "Goto 'https://mdt.unitedroleplay.me' and login via discord.", inline: false })
+        .setTimestamp()
+        .setFooter({ text: 'Creator Discord: lucifer666#1771 -- All Rights Reserved' });
+    return Embed;
+}
+exports.Emb_MDT_USERNOT_FOUND = Emb_MDT_USERNOT_FOUND;
+function Emb_MDT_USERAPI_NOTSET(DiscordUserID) {
+    var Embed = new EmbedBuilder()
+        .setColor("#CC0000")
+        .setTitle(Settings_1.Community_Name + " System Notifications")
+        .setURL('https://lucifersapi.live')
+        .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
+        .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
+        .addFields({ name: 'Request: ', value: "Sync Community User", inline: true }, { name: 'Discord: ', value: "<@" + DiscordUserID + ">", inline: true }, { name: 'Status: ', value: "FAILED", inline: true }, { name: 'Error: ', value: "API KEY NOT ENABLED", inline: false }, { name: 'Solution: ', value: "Goto 'https://mdt.unitedroleplay.me' and login via discord and click on the top right corner on your profile and click on 'Account' and Click on the tab 'User API Token' and enable it and save it.", inline: false })
+        .setTimestamp()
+        .setFooter({ text: 'Creator Discord: lucifer666#1771 -- All Rights Reserved' });
+    return Embed;
+}
+exports.Emb_MDT_USERAPI_NOTSET = Emb_MDT_USERAPI_NOTSET;
+function Emb_MDT_NEWCHAR(data) {
+    var Embed = new EmbedBuilder()
+        .setColor("#9d00ee")
+        .setTitle(Settings_1.Community_Name + " System Notifications")
+        .setURL('https://lucifersapi.live')
+        .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
+        .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
+        .addFields({ name: '\n', value: "New Character Creation", inline: false }, { name: 'First Name: ', value: String(data[0].FirstName), inline: true }, { name: 'Last Name: ', value: String(data[0].LastName), inline: true }, { name: 'Gender: ', value: String(data[0].Gender), inline: true }, { name: 'SSN: ', value: String(data[0].SSN), inline: true }, { name: 'Phone Number: ', value: String(data[0].Phone), inline: true }, { name: 'Creator: ', value: "<@" + String(data[0].DiscordID) + ">", inline: true }, { name: 'MDT ID: ', value: String(data[0].MDTID), inline: true }, { name: 'QB ID: ', value: String(data[0].QBID), inline: true })
+        .setTimestamp()
+        .setFooter({ text: 'Creator Discord: lucifer666#1771 -- All Rights Reserved' });
+    return Embed;
+}
+exports.Emb_MDT_NEWCHAR = Emb_MDT_NEWCHAR;
+function Emb_MDT_DELCHAR(data) {
+    var Embed = new EmbedBuilder()
+        .setColor("#3400ee")
+        .setTitle(Settings_1.Community_Name + " System Notifications")
+        .setURL('https://lucifersapi.live')
+        .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
+        .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
+        .addFields({ name: '\n', value: "Character Death", inline: false }, { name: 'First Name: ', value: String(data[0].FirstName), inline: true }, { name: 'Last Name: ', value: String(data[0].LastName), inline: true }, { name: 'Gender: ', value: String(data[0].Gender), inline: true }, { name: 'SSN: ', value: String(data[0].SSN), inline: true }, { name: 'Phone Number: ', value: String(data[0].Phone), inline: true }, { name: 'Creator: ', value: "<@" + String(data[0].DiscordID) + ">", inline: true }, { name: 'MDT ID: ', value: String(data[0].MDTID), inline: true }, { name: 'QB ID: ', value: String(data[0].QBID), inline: true })
+        .setTimestamp()
+        .setFooter({ text: 'Creator Discord: lucifer666#1771 -- All Rights Reserved' });
+    return Embed;
+}
+exports.Emb_MDT_DELCHAR = Emb_MDT_DELCHAR;
 function Emb_Fivem_User_SEND_Message(DiscordUserID, recpt, message, priority, fromchannel) {
     var Embed = new EmbedBuilder()
         .setColor(0x0099FF)
-        .setTitle(Settings_1.Community_Name + " Radio System Fivem Notifications")
+        .setTitle(Settings_1.Community_Name + " System Fivem Notifications")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -72,7 +124,7 @@ exports.Emb_Fivem_User_SEND_Message = Emb_Fivem_User_SEND_Message;
 function Emb_Radio_User_ERROR_CLIENT(DiscordUserID, FivemID, Hash, Error) {
     var Embed = new EmbedBuilder()
         .setColor("#880808")
-        .setTitle(Settings_1.Community_Name + " Radio System Client Error Reporting")
+        .setTitle(Settings_1.Community_Name + " System Client Error Reporting")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -85,7 +137,7 @@ exports.Emb_Radio_User_ERROR_CLIENT = Emb_Radio_User_ERROR_CLIENT;
 function Emb_Radio_User_BUG_CLIENT(DiscordUserID, FivemID, Hash, Error) {
     var Embed = new EmbedBuilder()
         .setColor("#ff4300")
-        .setTitle(Settings_1.Community_Name + " Radio System Bug Reporting")
+        .setTitle(Settings_1.Community_Name + " System Bug Reporting")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -98,7 +150,7 @@ exports.Emb_Radio_User_BUG_CLIENT = Emb_Radio_User_BUG_CLIENT;
 function Emb_Radio_User_Job_Update(DiscordUserID, FivemID, OldJob, Job) {
     var Embed = new EmbedBuilder()
         .setColor("#0dd73c")
-        .setTitle(Settings_1.Community_Name + " Radio System Client Job Update")
+        .setTitle(Settings_1.Community_Name + " System Client Job Update")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -111,7 +163,7 @@ exports.Emb_Radio_User_Job_Update = Emb_Radio_User_Job_Update;
 function Emb_Radio_User_Start_Priority(DiscordUserID, FivemID, x, y, z) {
     var Embed = new EmbedBuilder()
         .setColor("#880808")
-        .setTitle(Settings_1.Community_Name + " Radio System Panic Reporting")
+        .setTitle(Settings_1.Community_Name + " System Panic Reporting")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -124,7 +176,7 @@ exports.Emb_Radio_User_Start_Priority = Emb_Radio_User_Start_Priority;
 function Emb_Radio_User_STOP_Priority(DiscordUserID, FivemID) {
     var Embed = new EmbedBuilder()
         .setColor("#0df606")
-        .setTitle(Settings_1.Community_Name + " Radio System Panic Reporting")
+        .setTitle(Settings_1.Community_Name + " System Panic Reporting")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -137,7 +189,7 @@ exports.Emb_Radio_User_STOP_Priority = Emb_Radio_User_STOP_Priority;
 function Emb_Useralreadysynced(FivemLicense, DiscordUserID, NetworkUsername, NetworkID, Lastpostal) {
     var Embed = new EmbedBuilder()
         .setColor(0x0099FF)
-        .setTitle(Settings_1.Community_Name + " Radio System Profile System")
+        .setTitle(Settings_1.Community_Name + " System Profile System")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -150,7 +202,7 @@ exports.Emb_Useralreadysynced = Emb_Useralreadysynced;
 function Emb_Fivem_User_DENIED_CONNECTION(FivemLicense, DiscordUserID, reason) {
     var Embed = new EmbedBuilder()
         .setColor("FF001A")
-        .setTitle(Settings_1.Community_Name + " Radio System Fivem Notification")
+        .setTitle(Settings_1.Community_Name + " System Fivem Notification")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -163,7 +215,7 @@ exports.Emb_Fivem_User_DENIED_CONNECTION = Emb_Fivem_User_DENIED_CONNECTION;
 function Emb_NO_CHANNELS() {
     var Embed = new EmbedBuilder()
         .setColor("FF001A")
-        .setTitle(Settings_1.Community_Name + " Radio System Notification")
+        .setTitle(Settings_1.Community_Name + " System Notification")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -176,7 +228,7 @@ exports.Emb_NO_CHANNELS = Emb_NO_CHANNELS;
 function Emb_API_Req(APIRequest) {
     var Embed = new EmbedBuilder()
         .setColor(0x0099FF)
-        .setTitle(Settings_1.Community_Name + " Radio System Web API Request")
+        .setTitle(Settings_1.Community_Name + " System Web API Request")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -189,7 +241,7 @@ exports.Emb_API_Req = Emb_API_Req;
 function System_Status(status) {
     var Embed = new EmbedBuilder()
         .setColor(0x0099FF)
-        .setTitle(Settings_1.Community_Name + " Radio System Status Reporting")
+        .setTitle(Settings_1.Community_Name + " System Status Reporting")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -202,7 +254,7 @@ exports.System_Status = System_Status;
 function Add_newauthuser(Creator, newuser, Ckey) {
     var Embed = new EmbedBuilder()
         .setColor(0x0099FF)
-        .setTitle(Settings_1.Community_Name + " Radio System Admin Profile Creation")
+        .setTitle(Settings_1.Community_Name + " System Admin Profile Creation")
         .setURL('https://lucifersapi.live')
         .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
         .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
@@ -212,6 +264,19 @@ function Add_newauthuser(Creator, newuser, Ckey) {
     return Embed;
 }
 exports.Add_newauthuser = Add_newauthuser;
+function Remove_authuser(Creator, user, Ckey) {
+    var Embed = new EmbedBuilder()
+        .setColor("#ff9100")
+        .setTitle(Settings_1.Community_Name + " System Admin Profile REMOVAL")
+        .setURL('https://lucifersapi.live')
+        .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
+        .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
+        .addFields({ name: 'Manager: ', value: "<@" + Creator + ">", inline: true }, { name: 'Sub User: ', value: "<@" + user + ">", inline: true }, { name: 'AUTH KEY: ', value: String(Ckey), inline: true }, { name: 'Status: ', value: "REMOVED", inline: true })
+        .setTimestamp()
+        .setFooter({ text: 'Creator Discord: lucifer666#1771 -- All Rights Reserved' });
+    return Embed;
+}
+exports.Remove_authuser = Remove_authuser;
 function Print_Channels(ChannelName, ChannelID, Job) {
     var Embed = new EmbedBuilder()
         .setColor(0x0099FF)
@@ -238,3 +303,16 @@ function Remove_Channels(ChannelName, ChannelID) {
     return Embed;
 }
 exports.Remove_Channels = Remove_Channels;
+function Remove_Channels_ERROR(ChannelName, ChannelID, error) {
+    var Embed = new EmbedBuilder()
+        .setColor(0x0099FF)
+        .setTitle(Settings_1.Community_Name + " Radio System")
+        .setURL('https://lucifersapi.live')
+        .setAuthor({ name: "Lucifer Systems", iconURL: 'https://media2.giphy.com/media/S60CrN9iMxFlyp7uM8/giphy.gif', url: 'https://discord.js.org' })
+        .setThumbnail('https://gcdnb.pbrd.co/images/3R6E0bk0JzxA.png?o=1')
+        .addFields({ name: 'Channel Name: ', value: ChannelName, inline: true }, { name: 'Channel ID: ', value: ChannelID, inline: true }, { name: 'Status: ', value: "ERROR", inline: true }, { name: 'Error: ', value: error, inline: true })
+        .setTimestamp()
+        .setFooter({ text: 'Creator Discord: lucifer666#1771 -- All Rights Reserved' });
+    return Embed;
+}
+exports.Remove_Channels_ERROR = Remove_Channels_ERROR;

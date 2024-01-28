@@ -3,10 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Create_SyncedUser = exports.Create_AuthorizedUser = exports.Create_Community_Channel = exports.Delete_Channel = exports.Load_SyncUsers = exports.Load_AuthorizedUsers = exports.Load_Channels = void 0;
+exports.Create_SyncedUser = exports.DEL_AuthorizedUser = exports.DEL_CHAR = exports.Load_Chars = exports.Create_Char = exports.Create_AuthorizedUser = exports.Create_Community_Channel = exports.Delete_Channel = exports.Load_SyncUsers = exports.Load_AuthorizedUsers = exports.Load_Channels = void 0;
 var Logger_1 = __importDefault(require("./Logger"));
 var Structures_1 = require("../API/Structures");
 var Settings_1 = require("./Settings");
+var System_1 = require("../API/System");
 var mysql = require('mysql');
 var logger = new Logger_1.default("[SQL] [Lucifer Systems]");
 var con = mysql.createConnection({
@@ -93,13 +94,15 @@ function Load_SyncUsers() {
             for (var i = 0; i <= result.length - 1; i++) {
                 var d = JSON.parse(result[i].data)[0];
                 var userObj = [{
+                        MDTAPIKEY: d.MDTAPIKEY,
                         fivemLicenseID: d.fivemLicenseID,
                         discordID: d.discordID,
                         discordName: d.discordName,
                         currjob: d.currjob,
                         currpostal: d.currpostal,
                         currsocketID: d.currsocketID,
-                        Ckey: d.Ckey
+                        Ckey: d.Ckey,
+                        chars: d.chars
                     }];
                 console.log(userObj);
                 var res = (0, Structures_1.Add_Users)(d.Ckey, userObj);
@@ -165,6 +168,77 @@ function Create_AuthorizedUser(DiscordID, CommunityKey) {
     }
 }
 exports.Create_AuthorizedUser = Create_AuthorizedUser;
+function Create_Char(json, QBID) {
+    try {
+        var sql = "INSERT INTO `radio_chars`(`data`,`qbID`) VALUES (?,?)";
+        var Obj = new Array();
+        var data = [json, QBID];
+        // @ts-ignore
+        con.query(sql, data, function (err, result) {
+            if (err)
+                console.log(err);
+            return true;
+        });
+    }
+    catch (e) {
+        // @ts-ignore
+        logger.error("ERROR STORING AU: " + e.message);
+        return false;
+    }
+}
+exports.Create_Char = Create_Char;
+function Load_Chars() {
+    try {
+        // @ts-ignore
+        con.query("SELECT * FROM `radio_chars`", function (err, result) {
+            if (err)
+                return null;
+            for (var i = 0; i <= result.length - 1; i++) {
+                var d = JSON.parse(result[i].data);
+                (0, System_1.DB_SYNC_Char)(d);
+            }
+        });
+    }
+    catch (e) {
+        // @ts-ignore
+        logger.error("ERROR IN ADDING SYNC CHARS  (DB): " + e.message);
+    }
+}
+exports.Load_Chars = Load_Chars;
+function DEL_CHAR(QBID) {
+    try {
+        var sql = "DELETE FROM `radio_chars WHERE qbID=" + String(QBID);
+        // @ts-ignore
+        con.query(sql, function (err, result) {
+            if (err)
+                console.log(err);
+            return true;
+        });
+    }
+    catch (e) {
+        // @ts-ignore
+        logger.error("ERROR DELETING AU: " + e.message);
+        return false;
+    }
+}
+exports.DEL_CHAR = DEL_CHAR;
+function DEL_AuthorizedUser(DiscordID) {
+    try {
+        var sql = "DELETE FROM `radio_authorizedadmins WHERE DiscordID=" + DiscordID;
+        // @ts-ignore
+        con.query(sql, function (err, result) {
+            if (err)
+                console.log(err);
+            return true;
+        });
+    }
+    catch (e) {
+        // @ts-ignore
+        logger.error("ERROR DELETING AU: " + e.message);
+        return false;
+    }
+}
+exports.DEL_AuthorizedUser = DEL_AuthorizedUser;
 function Create_SyncedUser(user) {
     try {
         var sql = "INSERT INTO `radio_syncedusers`(`ID`, `data`) VALUES (?,?)";

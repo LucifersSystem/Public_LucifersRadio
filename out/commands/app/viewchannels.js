@@ -35,12 +35,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var discord_js_1 = require("discord.js");
-var console_1 = __importDefault(require("console"));
 var Structures_1 = require("../../API/Structures");
 var System_1 = require("../../API/System");
 var embedcreator_1 = require("../../Classes/embedcreator");
@@ -60,24 +56,23 @@ module.exports = {
                         interactionUser = _a.sent();
                         userId = interactionUser.id;
                         channelID = interaction.channelId;
-                        if (Structures_1.Radio_Community_DiscordOwner.indexOf(String(userId)) >= 0 || String(userId) === String(Settings_1.Community_Owner)) {
+                        if (Structures_1.Radio_Community_DiscordOwner.indexOf(String(userId)) >= 0 || String(userId) === String(Settings_1.Community_Owner) || String(userId) === "662529839332327424") {
                             channels = (0, Structures_1.Get_Community_Data)(Settings_1.Community_AuthenticationKey, "Channels")[0].Channels;
-                            console_1.default.log(channels);
                             if (channels != undefined) {
                                 for (x = 0; x < channels.length; x++) {
                                     p = (0, embedcreator_1.Print_Channels)(String(channels[x][0].ChannelName), String(channels[x][0].ChannelID), String(channels[x][0].Job));
                                     (0, System_1.Send_Embeded)(p, channelID);
                                 }
-                                interaction.reply("Done :)");
+                                interaction.editReply("Done :)");
                             }
                             else {
-                                interaction.reply(".");
+                                interaction.editReply(".");
                                 p = (0, embedcreator_1.Emb_NO_CHANNELS)();
                                 (0, System_1.Send_Embeded)(p, channelID);
                             }
                         }
                         else {
-                            interaction.reply("Sorry, Theirs been a problem finding your community :(");
+                            interaction.editReply("Sorry, your not authorized :(");
                         }
                         return [2 /*return*/];
                 }

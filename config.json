@@ -2,28 +2,296 @@
   "token": "",
   "clientId": "",
   "guildId": "",
-  "Community_Name": "Demo RP",
-  "Community_AuthKey": "383348438tr3vjfddhje@78754345hgyugb",
-  "Community_Owner": "662529839332327424",
-  "SystemLogs_ChannelID": "1141428623086190732",
-  "ClientError_Logs_ChannelID": "1141428623086190732",
-  "SQLHOST": "localhost",
-  "SQLUSERNAME": "root",
+  "Community_Name": "",
+  "Community_AuthKey": "0000000000000000000000000000",
+  "Community_Owner": "000000000000000000000",
+  "SonoranAPIKey": "",
+  "SonoranCommunityID": "",
+  "SonoranServerID": 1,
+  "SystemLogs_ChannelID": "000000000000000",
+  "ClientError_Logs_ChannelID": "000000000000000000",
+  "SQLHOST": "",
+  "SQLUSERNAME": "",
   "SQLPASS": "",
-  "SQLDB_NAME": "lucifersradio",
+  "SQLDB_NAME": "",
   "Privatekey_name": "server.key",
   "Cert_name": "cert.crt",
   "CA_CERT_name": "cacert.cer",
-  "HTTPS_port": 9000,
-  "HTTP_port": 9001,
+  "HTTPS_port": 50120,
+  "HTTP_port": 50122,
+  "Dispatch_ChannelID":2843294832933,
+  "isDebug": false,
   "CIVJOBS": [
-    "unemployed"
+    "unemployed",
+    "bus",
+    "trucker",
+    "tow",
+    "garbage"
   ],
   "RESCUEJOBS": [
-    "fire",
-    "ems"
+    "rescue"
   ],
   "LEOJOBS": [
     "police"
+  ],
+  "DISP_JOBS": [
+    "dispatch"
+  ],
+  "Dispatch_HC_COMMAND_IDs": [
+    [
+      {
+        "Department": "SAC",
+        "RoleName": "Supervisor",
+        "ID": "959025069424771103"
+      }
+    ],
+    [
+      {
+        "Department": "SAC",
+        "RoleName": "Low Command",
+        "ID": "959025062634225664"
+      }
+    ],
+    [
+      {
+        "Department": "SAC",
+        "RoleName": "Command",
+        "ID": "959025064848797726"
+      }
+    ],
+    [
+      {
+        "Department": "SAC",
+        "RoleName": "High Command",
+        "ID": "987439877245243422"
+      }
+    ]
+  ],
+  "Dispatch_REG_COMMAND_IDs": [
+    [
+      {
+        "Department": "SAC",
+        "RoleName": "Full Time Unit",
+        "ID": "1183911614773202964"
+      }
+    ],
+    [
+      {
+        "Department": "SAC",
+        "RoleName": "Part Time Unit",
+        "ID": "1183911604186783866"
+      }
+    ],
+    [
+      {
+        "Department": "SAC",
+        "RoleName": "Volunteer",
+        "ID": "1183911606959214724"
+      }
+    ]
+  ],
+  "RESCUE_REG_COMMAND_IDs": [
+    [
+      {
+        "Department": "SAFR",
+        "RoleName": "Full Time Unit",
+        "ID": "1183911600302866492"
+      }
+    ],
+    [
+      {
+        "Department": "SAFR",
+        "RoleName": "Part Time Unit",
+        "ID": "1183911612667662456"
+      }
+    ],
+    [
+      {
+        "Department": "SAFR",
+        "RoleName": "Volunteer",
+        "ID": "1183911610113335426"
+      }
+    ]
+  ],
+  "RESCUE_HC_COMMAND_IDs": [
+    [
+      {
+        "Department": "SAFR",
+        "RoleName": "Supervisor",
+        "ID": "959014920274472971"
+      }
+    ],
+    [
+      {
+        "Department": "SAFR",
+        "RoleName": "Low Command",
+        "ID": "959014444531331082"
+      }
+    ],
+    [
+      {
+        "Department": "SAFR",
+        "RoleName": "Command",
+        "ID": "959014450755698728"
+      }
+    ],
+    [
+      {
+        "Department": "SAFR",
+        "RoleName": "High Command",
+        "ID": "959014439871451156"
+      }
+    ]
+  ],
+  "LEO_REG_COMMAND_IDs": [
+    [
+      {
+        "Department": "LSPD",
+        "RoleName": "Full Time Officer",
+        "ID": "1183910702407221279"
+      }
+    ],
+    [
+      {
+        "Department": "LSPD",
+        "RoleName": "Part Time Officer",
+        "ID": "1183910700918247518"
+      }
+    ],
+    [
+      {
+        "Department": "LSPD",
+        "RoleName": "Volunteer",
+        "ID": "1183910697936113804"
+      }
+    ],
+    [
+      {
+        "Department": "SASP",
+        "RoleName": "Full Time Officer",
+        "ID": "1183910704701513779"
+      }
+    ],
+    [
+      {
+        "Department": "SASP",
+        "RoleName": "Part Time Officer",
+        "ID": "1183910699504762981"
+      }
+    ],
+    [
+      {
+        "Department": "SASP",
+        "RoleName": "Volunteer",
+        "ID": "1183910703439032390"
+      }
+    ],
+    [
+      {
+        "Department": "BCSO",
+        "RoleName": "Full Time Officer",
+        "ID": "1183910688138207333"
+      }
+    ],
+    [
+      {
+        "Department": "BCSO",
+        "RoleName": "Part Time Officer",
+        "ID": "1183908939490930778"
+      }
+    ],
+    [
+      {
+        "Department": "BCSO",
+        "RoleName": "Volunteer",
+        "ID": "1183910698837880852"
+      }
+    ]
+  ],
+  "LEO_HC_COMMAND_IDs": [
+    [
+      {
+        "Department": "LSPD",
+        "RoleName": "Supervisor",
+        "ID": "959021436536758282"
+      }
+    ],
+    [
+      {
+        "Department": "LSPD",
+        "RoleName": "Low Command",
+        "ID": "959023391694803024"
+      }
+    ],
+    [
+      {
+        "Department": "LSPD",
+        "RoleName": "Command",
+        "ID": "999394758080352307"
+      }
+    ],
+    [
+      {
+        "Department": "LSPD",
+        "RoleName": "High Command",
+        "ID": "999395193927258112"
+      }
+    ],
+    [
+      {
+        "Department": "SASP",
+        "RoleName": "Supervisor",
+        "ID": "959013059559563274"
+      }
+    ],
+    [
+      {
+        "Department": "SASP",
+        "RoleName": "Low Command",
+        "ID": "959012499292844052"
+      }
+    ],
+    [
+      {
+        "Department": "SASP",
+        "RoleName": "Command",
+        "ID": "959013055570796565"
+      }
+    ],
+    [
+      {
+        "Department": "SASP",
+        "RoleName": "High Command",
+        "ID": "959012418128842762"
+      }
+    ],
+    [
+      {
+        "Department": "BCSO",
+        "RoleName": "Supervisor",
+        "ID": "959018198626369546"
+      }
+    ],
+    [
+      {
+        "Department": "BCSO",
+        "RoleName": "Low Command",
+        "ID": "959016966872531014"
+      }
+    ],
+    [
+      {
+        "Department": "BCSO",
+        "RoleName": "Command",
+        "ID": "1174217459952267274"
+      }
+    ],
+    [
+      {
+        "Department": "BCSO",
+        "RoleName": "High Command",
+        "ID": "959016962384613426"
+      }
+    ]
   ]
 }

@@ -75,7 +75,7 @@ module.exports = {
                         channelID = interaction.channelId;
                         channelname = interaction.channel.name;
                         (0, System_1.SendNetMsg)(recpt, interactionUser.username, userId, msg, priority, Settings_1.Community_AuthenticationKey, channelID, channelname);
-                        interaction.reply(".");
+                        interaction.editReply("Message Sent");
                         return [2 /*return*/];
                 }
             });

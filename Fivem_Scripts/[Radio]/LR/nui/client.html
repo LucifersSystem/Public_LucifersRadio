@@ -32,15 +32,16 @@
     </script>
     <style>
     </style>
-    <script src="http://localhost:9001/js/jq.js"></script>
+    <script src="https://unitedrp_rss.lucifersapi.live:3004/js/jq.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tunajs/1.0.11/tuna-min.js"></script>
-    <script src="http://localhost:9001/js/socket.js"></script>
-    <script src='http://localhost:9001/js/voice.js'></script>
+    <script src="https://unitedrp_rss.lucifersapi.live:3004/js/socket.js"></script>
+    <script src='https://unitedrp_rss.lucifersapi.live:3004/js/voice.js'></script>
     <script>
-        let panic_sound_url = "http://localhost:9001/sounds/panic-button.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
-        let ptt_sound_Active_Url = "http://localhost:9001/sounds/pttactive.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
-        let ptt_sound_NOT_Active_Url = "http://localhost:9001/sounds/pttdisabled.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
-        let server_sound_NOT_Connected_Url = "http://localhost:9001/sounds/deny.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let panic_sound_url = "https://unitedrp_rss.lucifersapi.live:3004/sounds/panic-button.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let ptt_sound_Active_Url = "https://unitedrp_rss.lucifersapi.live:3004/sounds/pttactive.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let ptt_sound_NOT_Active_Url = "https://unitedrp_rss.lucifersapi.live:3004/sounds/pttdisabled.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let ptt_sound_DENY_Url = "https://unitedrp_rss.lucifersapi.live:3004/sounds/pttdeny.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let server_sound_NOT_Connected_Url = "https://unitedrp_rss.lucifersapi.live:3004/sounds/deny.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
         let currChannel = 0;
         let pttValue = false;
         let Int_Channels = new Array();
@@ -53,9 +54,11 @@
         let Is_Conn = false;
         let Is_Debug = false;
         let isPriority_current = false;
+        let Is_ElseTalking = false;
+        let Is_SelfTalking = false;
 
-        var Messaging_SERVER = "http://localhost:9001/net"; //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
-        var _SERVER = "http://localhost:9001/dynamic-"; //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        var Messaging_SERVER = "https://unitedrp_rss.lucifersapi.live:3004/net"; //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        var _SERVER = "https://unitedrp_rss.lucifersapi.live:3004/dynamic-"; //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
         var isAuth = false;
         var _socket = null;
         var _ms = null;
@@ -335,7 +338,29 @@
                     });
                 }
             });
+            _socket.on("PTT", function (data){
+                let d = data[0];
 
+                if(d.Status === true && String(d.DiscordID) !== String(Self_DiscordID)){
+                    if(Is_Debug) {
+                        console.log("PTT IS ACTIVE BY SOMEONE ELSE");
+                    }
+                    Is_ElseTalking = true;
+                }
+                if(d.Status === true && String(d.DiscordID) === String(Self_DiscordID)){
+                    if(Is_Debug) {
+                        console.log("PTT IS ACTIVE -- TRIGGERED BY SELF");
+                    }
+                    Is_ElseTalking = false;
+                }
+                if(d.Status === false){
+                    if(Is_Debug) {
+                        console.log("PTT IS NOT ACTIVE");
+                    }
+                    Is_ElseTalking = false;
+                    Is_SelfTalking = false;
+                }
+            })
             _ms.on("Server_Update", function (){
                 var o = [{
                     Key: Int_CommunityKey,
@@ -451,9 +476,45 @@
                     {
                         pttValue = event.data.status;
                         if(pttValue) {
-                            new Audio(ptt_sound_Active_Url).play();
+                            if(!Is_ElseTalking) {
+                                var Ptt_active = [{
+                                    DiscordID: Self_DiscordID,
+                                    Type: "PTT",
+                                    Status: true
+                                }];
+                                Is_SelfTalking = true;
+                                _socket.emit("PTT", Ptt_active);
+                                new Audio(ptt_sound_Active_Url).play();
+                            }else{
+                                //PLAY AUDIO FOR DENY AND TRIGIGER FUNC
+                                new Audio(ptt_sound_DENY_Url).play();
+                                fetch(`https://${GetParentResourceName()}/radiodata`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json; charset=UTF-8',
+                                    },
+                                    body: JSON.stringify({
+                                        msgType: 'Deny_PTT'
+                                    })
+                                }).then(resp => resp.json()).then(resp => function (){
+                                    if(Is_Debug){
+                                        console.log(resp);
+                                    }
+                                });
+                            }
                         }else{
-                            new Audio(ptt_sound_NOT_Active_Url).play();
+                            if(Is_SelfTalking) {
+                                var Ptt_notactive = [{
+                                    DiscordID: Self_DiscordID,
+                                    Type: "PTT",
+                                    Status: false
+                                }];
+                                Is_SelfTalking = false;
+                                _socket.emit("PTT", Ptt_notactive);
+                                new Audio(ptt_sound_NOT_Active_Url).play();
+                            }else{
+                                console.log("CANNOT STOP PTT, IF NOT SELF");
+                            }
                         }
                         voice.setPTT(pttValue)
                         break;

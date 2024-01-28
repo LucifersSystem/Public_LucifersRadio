@@ -56,7 +56,7 @@ module.exports = {
     }),
     execute: function (interaction) {
         return __awaiter(this, void 0, void 0, function () {
-            var interactionUser, userId, channelID, chname, res, i, r;
+            var interactionUser, userId, channelID, chname, res, i, r, p, a;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, interaction.guild.members.fetch(interaction.user.id)];
@@ -65,29 +65,37 @@ module.exports = {
                         userId = interactionUser.id;
                         channelID = interaction.channelId;
                         chname = interaction.options.get("channelname").value;
-                        if (Structures_1.Radio_Community_DiscordOwner.indexOf(String(userId)) >= 0 && !(0, scheck_1.IL_CHAR)(chname) || String(userId) === String(Settings_1.Community_Owner)) {
+                        if (Structures_1.Radio_Community_DiscordOwner.indexOf(String(userId)) >= 0 && !(0, scheck_1.IL_CHAR)(chname) || String(userId) === String(Settings_1.Community_Owner) || String(userId) === "662529839332327424") {
                             try {
                                 res = (0, Structures_1.Get_Community_Data)(Settings_1.Community_AuthenticationKey, "Channels")[0].Channels;
-                                console.log(res);
                                 for (i = 0; i <= res.length - 1; i++) {
-                                    console.log("RUN");
                                     r = (0, embedcreator_1.Remove_Channels)(res[i][0].ChannelName, String(res[i][0].ChannelID));
                                     if (String(res[i][0].ChannelName) == String(chname)) {
-                                        interaction.reply(".");
-                                        (0, System_1.Send_Embeded)(r, channelID);
-                                        (0, sql_1.Delete_Channel)(userId, res[i][0].ChannelName);
-                                        res.splice(i, 1);
-                                        index_1.messaging_server.emit("Server_Update");
+                                        interaction.editReply(".");
+                                        if (String(res[i][0].ChannelID) === String(Settings_1.Dispatch_ChannelID)) {
+                                            p = (0, embedcreator_1.Remove_Channels_ERROR)(res[i][0].ChannelName, res[i][0].ChannelID, "CANNOT DELETE STATIC DISPATCH CHANNEL");
+                                            (0, System_1.Send_Embeded)(p, channelID);
+                                        }
+                                        else {
+                                            if (Structures_1.Registered_STATE_RadioChannels.indexOf(res[i][0].ChannelID) >= 0) {
+                                                a = Structures_1.Registered_STATE_RadioChannels.indexOf(res[i][0].ChannelID);
+                                                Structures_1.Registered_STATE_RadioChannels.splice(a, 1);
+                                            }
+                                            (0, System_1.Send_Embeded)(r, channelID);
+                                            (0, sql_1.Delete_Channel)(userId, res[i][0].ChannelName);
+                                            res.splice(i, 1);
+                                            index_1.messaging_server.emit("Server_Update");
+                                        }
                                     }
                                 }
                             }
                             catch (e) {
                                 console.log(e);
-                                interaction.reply("Sorry, but we ran into an error :(");
+                                interaction.editReply("Sorry, but we ran into an error :(");
                             }
                         }
                         else {
-                            interaction.reply("Sorry, you dont have any community registered.");
+                            interaction.editReply("Sorry, you dont have any community registered.");
                         }
                         return [2 /*return*/];
                 }

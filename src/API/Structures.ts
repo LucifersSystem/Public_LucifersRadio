@@ -1,6 +1,9 @@
 // @ts-ignore
 import Logger from "../classes/Logger";
-import {Create_AuthorizedUser} from "../Classes/sql";
+import {Create_AuthorizedUser, DEL_AuthorizedUser} from "../Classes/sql";
+import {discordSort} from "discord.js";
+import {validateDiscordOpusHead} from "@discordjs/voice";
+import {Police_Jobs, Rescue_Jobs} from "../Classes/Settings";
 const logger = new Logger("[DATA STRUCTURES] [Lucifer Systems]");
 
 export const Radio_Community_Keys_Discord = new Array();
@@ -9,6 +12,7 @@ export const Radio_Community_DiscordOwner = new Array();
 const Communities = new Array();
 export const Registered_Community_Keys = new Array();
 export const Registered_RadioChannels = new Array();
+export const Registered_STATE_RadioChannels = new Array();
 
 export function Add_Community_Radio_Channel(CommunityKey: string, ChannelID:any, ChannelName:string, Job:string){
   try{
@@ -26,6 +30,16 @@ export function Add_Community_Radio_Channel(CommunityKey: string, ChannelID:any,
               ChannelID: String(ChannelID),
               Job: String(Job)
             }]
+            if(Police_Jobs.indexOf(String(Job)) >= 0){
+              if(Registered_STATE_RadioChannels.indexOf(ChannelID) <= -1) {
+                Registered_STATE_RadioChannels.push(ChannelID);
+              }
+            }
+            if(Rescue_Jobs.indexOf(String(Job)) >= 0){
+              if(Registered_STATE_RadioChannels.indexOf(ChannelID) <= -1) {
+                Registered_STATE_RadioChannels.push(ChannelID);
+              }
+            }
             RCA.push(Obj)
             CommunityObj.push(RCA);
             return true;
@@ -48,6 +62,16 @@ export function Add_Community_Radio_Channel(CommunityKey: string, ChannelID:any,
               ChannelID: String(ChannelID),
               Job: String(Job)
             }]
+            if(Police_Jobs.indexOf(String(Job)) >= 0){
+              if(Registered_STATE_RadioChannels.indexOf(ChannelID) <= -1) {
+                Registered_STATE_RadioChannels.push(ChannelID);
+              }
+            }
+            if(Rescue_Jobs.indexOf(String(Job)) >= 0){
+              if(Registered_STATE_RadioChannels.indexOf(ChannelID) <= -1) {
+                Registered_STATE_RadioChannels.push(ChannelID);
+              }
+            }
             Channels_.push(Obj);
             logger.success("Community " + CommunityObj[0][0] + " Added Channel " + ChannelName + " ID: " + ChannelID);
             return true;
@@ -67,6 +91,7 @@ export function Add_Community_Radio_Channel(CommunityKey: string, ChannelID:any,
 
 export function Add_Users(CommunityKey:string, UserOb:any){
   try{
+    console.log(UserOb);
     for(let x = 0; x<= Communities.length -1;x++){
       let Community_Obj = Communities[x];
       let Community_IDObj = Community_Obj[0];
@@ -76,14 +101,23 @@ export function Add_Users(CommunityKey:string, UserOb:any){
 
       if(Community_IDObj.indexOf(String(CommunityKey)) >= 0){
         logger.success("Found Community User obj for: "+ CommunityKey);
-        for(let u = 0; u<= Community_UsersObj.length-1; u++){
-          console.log(Community_UsersObj.length);
+        for(let u = 0; u<= Community_UsersObj.length -1; u++){
           let User = Community_UsersObj[u];
-          let User_ID = User[0].discordID;
-          if (String(User_ID) === (String(UserOb[0].discordID))) {
+          console.log("CHECKING USER OBJ: ");
+          console.log(User[0]);
+          try {
+            let User_ID = User[0].discordID;
+            console.log("USER ID IS: " + User_ID);
+            if (String(User_ID) === String(UserOb[0].discordID)) {
               logger.error("Found User: " + User_ID);
               IsFound_User = true;
               return false;
+            }
+          }catch (err){
+            logger.warn("[BUG] IS USER DISC EXIST BUT NOT TRUE");
+            Communities[x][1][0].push(UserOb[0]);
+            logger.success("Created User Object for: "+ UserOb[0]);
+            return true;
           }
         }
         if(!IsFound_User){
@@ -192,9 +226,24 @@ export function Get_Community_Data(ICommunityKey: string, request:string){
 export function Create_DiscordAuthorizedUser(discordID:any, communitykey: any, discordname:any){
   try{
     if(Radio_Community_DiscordOwner.indexOf(String(discordID)) <= -1){
-      Radio_Community_DiscordOwner.push(discordID);
+      Radio_Community_DiscordOwner.push(String(discordID));
       Radio_Community_Keys_Discord.push(communitykey);
       Create_AuthorizedUser(discordID, communitykey);
+    }else{
+      return;
+    }
+  }catch (e) {
+    // @ts-ignore
+    logger.error(e.message);
+  }
+}
+export function Del_DiscordAuthorizedUser(discordID:any){
+  try{
+    if(Radio_Community_DiscordOwner.indexOf(String(discordID)) >= 0){
+      let p = Radio_Community_DiscordOwner.indexOf(String(discordID));
+      Radio_Community_DiscordOwner.splice(p, 1);
+      Radio_Community_Keys_Discord.splice(p, 1);
+      DEL_AuthorizedUser(discordID);
     }else{
       return;
     }

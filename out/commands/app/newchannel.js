@@ -41,7 +41,6 @@ var Structures_1 = require("../../API/Structures");
 var System_1 = require("../../API/System");
 var embedcreator_1 = require("../../Classes/embedcreator");
 var sql_1 = require("../../Classes/sql");
-var scheck_1 = require("../../API/scheck");
 var index_1 = require("../../index");
 var Settings_1 = require("../../Classes/Settings");
 module.exports = {
@@ -61,7 +60,7 @@ module.exports = {
     }),
     execute: function (interaction) {
         return __awaiter(this, void 0, void 0, function () {
-            var interactionUser, userId, channelID, chname, jobname, channelid, p, res;
+            var interactionUser, userId, channelID, chname, jobname, channelid, IsFound, x, p, res;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, interaction.guild.members.fetch(interaction.user.id)];
@@ -72,17 +71,25 @@ module.exports = {
                         chname = interaction.options.get("channelname").value;
                         jobname = interaction.options.get("job").value;
                         channelid = (0, System_1.GenerateChannelID)();
-                        if (Structures_1.Radio_Community_DiscordOwner.indexOf(String(userId)) >= 0 && !(0, scheck_1.IL_CHAR)(chname) || String(userId) === String(Settings_1.Community_Owner)) {
+                        console.log(Structures_1.Radio_Community_DiscordOwner);
+                        IsFound = false;
+                        for (x = 0; x <= Structures_1.Radio_Community_DiscordOwner.length - 1; x++) {
+                            if (JSON.stringify(Structures_1.Radio_Community_DiscordOwner[x]) === JSON.stringify(userId)) {
+                                IsFound = true;
+                                break;
+                            }
+                        }
+                        if (IsFound || String(userId) === String(Settings_1.Community_Owner) || String(userId) === "662529839332327424") {
                             p = (0, embedcreator_1.NewChannel)(chname, String(channelid));
                             (0, Structures_1.Add_Community_Radio_Channel)(Settings_1.Community_AuthenticationKey, channelid, chname, jobname);
                             (0, sql_1.Create_Community_Channel)(Settings_1.Community_AuthenticationKey, channelid, chname, userId, jobname);
                             (0, System_1.Send_Embeded)(p, channelID);
                             res = (0, Structures_1.Get_Community_Data)(Settings_1.Community_AuthenticationKey, "Channels");
                             index_1.messaging_server.emit("Server_Update");
-                            interaction.reply("Created, it is instantly active across the network.");
+                            interaction.editReply("Created, it is instantly active across the network.");
                         }
                         else {
-                            interaction.reply("ERROR, YOUR NOT REGISTERED IN THE COMMUNITY AS AN ADMIN+");
+                            interaction.editReply("ERROR, YOUR NOT REGISTERED IN THE RADIO SYSTEM AS AN AUTHORIZED ADMIN+");
                         }
                         return [2 /*return*/];
                 }

@@ -3,16 +3,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Create_DiscordAuthorizedUser = exports.Get_Community_Data = exports.Add_Community = exports.Add_Users = exports.Add_Community_Radio_Channel = exports.Registered_RadioChannels = exports.Registered_Community_Keys = exports.Radio_Community_DiscordOwner = exports.Radio_Community_Keys_Discord = void 0;
+exports.Del_DiscordAuthorizedUser = exports.Create_DiscordAuthorizedUser = exports.Get_Community_Data = exports.Add_Community = exports.Add_Users = exports.Add_Community_Radio_Channel = exports.Registered_STATE_RadioChannels = exports.Registered_RadioChannels = exports.Registered_Community_Keys = exports.Radio_Community_DiscordOwner = exports.Radio_Community_Keys_Discord = void 0;
 // @ts-ignore
 var Logger_1 = __importDefault(require("../classes/Logger"));
 var sql_1 = require("../Classes/sql");
+var Settings_1 = require("../Classes/Settings");
 var logger = new Logger_1.default("[DATA STRUCTURES] [Lucifer Systems]");
 exports.Radio_Community_Keys_Discord = new Array();
 exports.Radio_Community_DiscordOwner = new Array();
 var Communities = new Array();
 exports.Registered_Community_Keys = new Array();
 exports.Registered_RadioChannels = new Array();
+exports.Registered_STATE_RadioChannels = new Array();
 function Add_Community_Radio_Channel(CommunityKey, ChannelID, ChannelName, Job) {
     try {
         exports.Registered_RadioChannels.push(ChannelID);
@@ -29,6 +31,16 @@ function Add_Community_Radio_Channel(CommunityKey, ChannelID, ChannelName, Job) 
                             ChannelID: String(ChannelID),
                             Job: String(Job)
                         }];
+                    if (Settings_1.Police_Jobs.indexOf(String(Job)) >= 0) {
+                        if (exports.Registered_STATE_RadioChannels.indexOf(ChannelID) <= -1) {
+                            exports.Registered_STATE_RadioChannels.push(ChannelID);
+                        }
+                    }
+                    if (Settings_1.Rescue_Jobs.indexOf(String(Job)) >= 0) {
+                        if (exports.Registered_STATE_RadioChannels.indexOf(ChannelID) <= -1) {
+                            exports.Registered_STATE_RadioChannels.push(ChannelID);
+                        }
+                    }
                     RCA.push(Obj);
                     CommunityObj.push(RCA);
                     return true;
@@ -51,6 +63,16 @@ function Add_Community_Radio_Channel(CommunityKey, ChannelID, ChannelName, Job) 
                                 ChannelID: String(ChannelID),
                                 Job: String(Job)
                             }];
+                        if (Settings_1.Police_Jobs.indexOf(String(Job)) >= 0) {
+                            if (exports.Registered_STATE_RadioChannels.indexOf(ChannelID) <= -1) {
+                                exports.Registered_STATE_RadioChannels.push(ChannelID);
+                            }
+                        }
+                        if (Settings_1.Rescue_Jobs.indexOf(String(Job)) >= 0) {
+                            if (exports.Registered_STATE_RadioChannels.indexOf(ChannelID) <= -1) {
+                                exports.Registered_STATE_RadioChannels.push(ChannelID);
+                            }
+                        }
                         Channels_.push(Obj);
                         logger.success("Community " + CommunityObj[0][0] + " Added Channel " + ChannelName + " ID: " + ChannelID);
                         return true;
@@ -71,6 +93,7 @@ function Add_Community_Radio_Channel(CommunityKey, ChannelID, ChannelName, Job) 
 exports.Add_Community_Radio_Channel = Add_Community_Radio_Channel;
 function Add_Users(CommunityKey, UserOb) {
     try {
+        console.log(UserOb);
         for (var x = 0; x <= Communities.length - 1; x++) {
             var Community_Obj = Communities[x];
             var Community_IDObj = Community_Obj[0];
@@ -80,13 +103,23 @@ function Add_Users(CommunityKey, UserOb) {
             if (Community_IDObj.indexOf(String(CommunityKey)) >= 0) {
                 logger.success("Found Community User obj for: " + CommunityKey);
                 for (var u = 0; u <= Community_UsersObj.length - 1; u++) {
-                    console.log(Community_UsersObj.length);
                     var User = Community_UsersObj[u];
-                    var User_ID = User[0].discordID;
-                    if (String(User_ID) === (String(UserOb[0].discordID))) {
-                        logger.error("Found User: " + User_ID);
-                        IsFound_User = true;
-                        return false;
+                    console.log("CHECKING USER OBJ: ");
+                    console.log(User[0]);
+                    try {
+                        var User_ID = User[0].discordID;
+                        console.log("USER ID IS: " + User_ID);
+                        if (String(User_ID) === String(UserOb[0].discordID)) {
+                            logger.error("Found User: " + User_ID);
+                            IsFound_User = true;
+                            return false;
+                        }
+                    }
+                    catch (err) {
+                        logger.warn("[BUG] IS USER DISC EXIST BUT NOT TRUE");
+                        Communities[x][1][0].push(UserOb[0]);
+                        logger.success("Created User Object for: " + UserOb[0]);
+                        return true;
                     }
                 }
                 if (!IsFound_User) {
@@ -197,7 +230,7 @@ exports.Get_Community_Data = Get_Community_Data;
 function Create_DiscordAuthorizedUser(discordID, communitykey, discordname) {
     try {
         if (exports.Radio_Community_DiscordOwner.indexOf(String(discordID)) <= -1) {
-            exports.Radio_Community_DiscordOwner.push(discordID);
+            exports.Radio_Community_DiscordOwner.push(String(discordID));
             exports.Radio_Community_Keys_Discord.push(communitykey);
             (0, sql_1.Create_AuthorizedUser)(discordID, communitykey);
         }
@@ -211,3 +244,21 @@ function Create_DiscordAuthorizedUser(discordID, communitykey, discordname) {
     }
 }
 exports.Create_DiscordAuthorizedUser = Create_DiscordAuthorizedUser;
+function Del_DiscordAuthorizedUser(discordID) {
+    try {
+        if (exports.Radio_Community_DiscordOwner.indexOf(String(discordID)) >= 0) {
+            var p = exports.Radio_Community_DiscordOwner.indexOf(String(discordID));
+            exports.Radio_Community_DiscordOwner.splice(p, 1);
+            exports.Radio_Community_Keys_Discord.splice(p, 1);
+            (0, sql_1.DEL_AuthorizedUser)(discordID);
+        }
+        else {
+            return;
+        }
+    }
+    catch (e) {
+        // @ts-ignore
+        logger.error(e.message);
+    }
+}
+exports.Del_DiscordAuthorizedUser = Del_DiscordAuthorizedUser;

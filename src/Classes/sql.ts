@@ -1,6 +1,7 @@
 import Logger from "./Logger";
 import {Add_Community_Radio_Channel, Add_Users, Radio_Community_DiscordOwner, Radio_Community_Keys_Discord} from "../API/Structures";
 import {Community_SQL_CONN_HOST, Community_SQL_CONN_PASS, Community_SQL_CONN_USERNAME,Community_SQL_DBNAME} from "./Settings";
+import {DB_SYNC_Char} from "../API/System";
 
 var mysql = require('mysql');
 const logger = new Logger("[SQL] [Lucifer Systems]");
@@ -89,13 +90,15 @@ export function Load_SyncUsers(){
             for(var i = 0; i <= result.length -1; i++) {
                 let d = JSON.parse(result[i].data)[0];
                 var userObj = [{
+                    MDTAPIKEY: d.MDTAPIKEY,
                     fivemLicenseID: d.fivemLicenseID,
                     discordID: d.discordID,
                     discordName: d.discordName,
                     currjob: d.currjob,
                     currpostal: d.currpostal,
                     currsocketID: d.currsocketID,
-                    Ckey: d.Ckey
+                    Ckey: d.Ckey,
+                    chars: d.chars
                 }]
                 console.log(userObj);
                 let res = Add_Users(d.Ckey, userObj);
@@ -151,6 +154,69 @@ export function Create_AuthorizedUser(DiscordID:string, CommunityKey: string){
     }catch (e) {
         // @ts-ignore
         logger.error("ERROR STORING AU: "+ e.message);
+        return false;
+    }
+}
+export function Create_Char(json:string, QBID:string){
+    try {
+            let sql = `INSERT INTO \`radio_chars\`(\`data\`,\`qbID\`) VALUES (?,?)`;
+            let Obj = new Array();
+            let data = [json, QBID];
+            // @ts-ignore
+            con.query(sql, data, function (err, result) {
+                if (err) console.log(err);
+                return true;
+            })
+
+    }catch (e) {
+        // @ts-ignore
+        logger.error("ERROR STORING AU: "+ e.message);
+        return false;
+    }
+}
+
+export function Load_Chars(){
+    try {
+        // @ts-ignore
+        con.query("SELECT * FROM `radio_chars`", function (err, result){
+            if (err) return null;
+            for(var i = 0; i <= result.length -1; i++) {
+                let d = JSON.parse(result[i].data);
+                DB_SYNC_Char(d);
+            }
+        })
+    }catch (e) {
+        // @ts-ignore
+        logger.error("ERROR IN ADDING SYNC CHARS  (DB): "+ e.message);
+    }
+}
+export function DEL_CHAR(QBID:string){
+    try {
+        let sql = `DELETE FROM \`radio_chars\ WHERE qbID=`+String(QBID);
+        // @ts-ignore
+        con.query(sql,function (err, result) {
+            if (err) console.log(err);
+            return true;
+        })
+
+    }catch (e) {
+        // @ts-ignore
+        logger.error("ERROR DELETING AU: "+ e.message);
+        return false;
+    }
+}
+export function DEL_AuthorizedUser(DiscordID:string){
+    try {
+            let sql = `DELETE FROM \`radio_authorizedadmins\ WHERE DiscordID=`+DiscordID;
+            // @ts-ignore
+            con.query(sql,function (err, result) {
+                if (err) console.log(err);
+                return true;
+            })
+
+    }catch (e) {
+        // @ts-ignore
+        logger.error("ERROR DELETING AU: "+ e.message);
         return false;
     }
 }

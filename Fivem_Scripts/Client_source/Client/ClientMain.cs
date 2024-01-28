@@ -34,6 +34,8 @@ namespace LucifersRadio.Client
         protected internal static Action unfocusInternal;
         protected internal static Action toggleFocusInternal;
         protected internal static Action<string, string, string> Drawgps;
+        protected internal static Action<string, int> SetJOB;
+
 
 
         bool isDevMode = false;
@@ -44,7 +46,7 @@ namespace LucifersRadio.Client
         public bool isConnnected = false;
         public int Curr_Volume = 0;
         public int Radio_MaxChannels = 0;
-        public string Radio_CommunityName = "Lucifers Radio System";
+        public string Radio_CommunityName = "United RP";
         public string CurrChannelName = "";
         public int CurrChannel = 0;
         public bool isFocused = false;
@@ -52,6 +54,10 @@ namespace LucifersRadio.Client
         public string CurrModel = "APX8000";
         public string Curr_Job = "";
         public string Last_Job = "";
+        public string Curr_DiscordID = "";
+        public string Curr_License = "";
+
+        
 
         public ClientMain()
         {
@@ -60,6 +66,10 @@ namespace LucifersRadio.Client
             Radio_ScreenUpdateInternal = delegate (string btn01, string btn02, string btn03, string btn04, string btn05, string ln01, string ln02, string zn, string ch)
             {
                 Exports["radio"].dispUpdate(btn01, btn02, btn03, btn04, btn05, ln01, ln02, zn, ch);
+            };
+            SetJOB = delegate (string Job, int Rank)
+            {
+                Exports["radio"].SetJob(Job, Rank);
             };
             Drawgps = delegate (string x, string y, string z)
             {
@@ -232,6 +242,20 @@ namespace LucifersRadio.Client
                             CurrChannel = 0;
                             MaxChannels = 0;
                             break;
+
+                        case "Deny_PTT":
+                            showAlertInternal("PTT DENIED");
+                            break;
+
+                        case "Job_Error":
+                            String error3 = data["error"].ToString();
+                            Screen.ShowNotification("Update: " + error3);
+                            break;
+                        case "Job_Update":
+                            String newjob = data["job"].ToString();
+                            int rank = Convert.ToInt32(data["rank"]);
+                            SetJOB(newjob, rank);
+                            break;
                     }
                 }catch(Exception e)
                 {
@@ -240,6 +264,7 @@ namespace LucifersRadio.Client
                 
             });
         }
+
 
         [Tick]
         public async Task OnTick()
@@ -382,6 +407,81 @@ namespace LucifersRadio.Client
                 Error_Post(e);
             }
         }
+        [Command("startdispatch")]
+        public void SET_Dispatch()
+        {
+            try
+            {
+                if (Curr_DiscordID != "")
+                {
+                    var data = new
+                    {
+                        msgType = "ReqJob",
+                        Job = "dispatch",
+                        DiscordID = Curr_DiscordID
+                    };
+                    SEND_NUI(data);
+                }
+                else
+                {
+                    Screen.ShowNotification("Please run /radio to INIT");
+                }
+            }
+            catch(Exception e)
+            {
+                Error_Post(e);
+            }
+        }
+        [Command("startrescue")]
+        public void SET_RESCUE()
+        {
+            try
+            {
+                if (Curr_DiscordID != "")
+                {
+                    var data = new
+                    {
+                        msgType = "ReqJob",
+                        Job = "rescue",
+                        DiscordID = Curr_DiscordID
+                    };
+                    SEND_NUI(data);
+                }
+                else
+                {
+                    Screen.ShowNotification("Please run /radio to INIT");
+                }
+            }
+            catch (Exception e)
+            {
+                Error_Post(e);
+            }
+        }
+        [Command("startpolice")]
+        public void SET_POLICE()
+        {
+            try
+            {
+                if (Curr_DiscordID != "")
+                {
+                    var data = new
+                    {
+                        msgType = "ReqJob",
+                        Job = "police",
+                        DiscordID = Curr_DiscordID
+                    };
+                    SEND_NUI(data);
+                }
+                else
+                {
+                    Screen.ShowNotification("Please run /radio to INIT");
+                }
+            }
+            catch (Exception e)
+            {
+                Error_Post(e);
+            }
+        }
         [Command("volUP")]
         public void Up_Vol()
         {
@@ -495,6 +595,8 @@ namespace LucifersRadio.Client
         {
             try
             {
+                Curr_DiscordID = discord;
+                Curr_License = license;
                 var data = new
                 {
                     msgType = "init",
@@ -503,6 +605,19 @@ namespace LucifersRadio.Client
                     license = license
                 };
                 SEND_NUI(data);
+            }catch(Exception e)
+            {
+                Error_Post(e);
+            }
+
+        }
+        public void SetID(string discord, string license, string ckey)
+        {
+            try
+            {
+                Curr_DiscordID = discord;
+                Curr_License = license;
+                Log.debug("Discord ID: " + Curr_DiscordID);
             }catch(Exception e)
             {
                 Error_Post(e);

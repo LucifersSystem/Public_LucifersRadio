@@ -5,8 +5,14 @@ import fs, {readFileSync} from "fs";
 import * as http from "http";
 import {REST, Routes} from "discord.js";
 import console from "console";
-import {Add_Community, Get_Community_Data, Registered_Community_Keys, Registered_RadioChannels} from "./API/Structures";
-import {Delete_Channel, Load_AuthorizedUsers, Load_Channels, Load_SyncUsers} from "./Classes/sql";
+import {
+    Add_Community, Add_Community_Radio_Channel,
+    Get_Community_Data,
+    Registered_Community_Keys,
+    Registered_RadioChannels,
+    Registered_STATE_RadioChannels
+} from "./API/Structures";
+import {Delete_Channel, Load_AuthorizedUsers, Load_Channels, Load_Chars, Load_SyncUsers} from "./Classes/sql";
 import {
     Api_Error,
     Emb_API_Req,
@@ -15,11 +21,11 @@ import {
     Emb_Radio_User_BUG_CLIENT,
     Emb_Radio_User_ERROR_CLIENT,
     Emb_Radio_User_Start_Priority,
-    Emb_Radio_User_STOP_Priority,
+    Emb_Radio_User_STOP_Priority, Emb_Useralreadysynced,
     Remove_Channels,
     System_Status
 } from "./Classes/embedcreator";
-import {Send_Embeded} from "./API/System";
+import {NewChar_Get_MDT_USER, Proc_Delete_Char, Send_Embeded} from "./API/System";
 import {
     CIVILIAN_Jobs,
     Community_AuthenticationKey,
@@ -30,13 +36,22 @@ import {
     Discord_Bot_clientId,
     Discord_Bot_Token,
     Discord_Community_GUID,
+    Dispatch_ChannelID, Dispatch_HC_Job_IDs,
+    Dispatch_Jobs, Dispatch_REG_Job_IDs,
     HTTP_PORT,
-    HTTPS_PORT, Police_Jobs, Rescue_Jobs,
+    HTTPS_PORT,
+    isRadio_Debug,
+    Police_HC_Job_IDs,
+    Police_Jobs,
+    Police_REG_Job_IDs,
+    Rescue_HC_Job_IDs,
+    Rescue_Jobs, Rescue_REG_Job_IDs,
     SSL_TLS_CACERT_FILENAME,
     SSL_TLS_CERT_FILENAME,
     SSL_TLS_PRIVATEKEY_FILENAME
 } from "./Classes/Settings";
 import path from "path";
+import {Get_MDTUSER} from "./Classes/api";
 
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const https = require('https');
@@ -65,17 +80,17 @@ const httpsServer = https.createServer({
 
 httpsServer.listen(HTTPS_PORT, () => {
     logger.info('WSS/HTTPS Server running on port '+ HTTPS_PORT);
-
-
 });
 
 
 httpServer.listen(HTTP_PORT, () => {
     logger.info('WS/HTTP Server running on port '+ HTTP_PORT);
     Add_Community(Community_Name, Community_AuthenticationKey, Community_Owner);
+    Add_Community_Radio_Channel(Community_AuthenticationKey, Dispatch_ChannelID, "DISPATCH", Dispatch_Jobs[0]);
     Load_SyncUsers();
     Load_Channels();
     Load_AuthorizedUsers();
+    Load_Chars();
 });
 
 
@@ -86,13 +101,17 @@ const io = require('socket.io')(httpServer, {pingTimeout: 60000, allowEIO3: true
 
 client.once(Events.ClientReady, (c: { user: { tag: any; }; }) => {
     let p = System_Status("STARTED");
-    Send_Embeded(p, Community_SystemLogs_Discord_Channel);
+    if(isRadio_Debug) {
+        Send_Embeded(p, Community_SystemLogs_Discord_Channel);
+    }
+    logger.success("SYSTEM STARTED");
     logger.warn(`Ready! Logged in as ${c.user.tag}`);
 });
 
 client.login(Discord_Bot_Token);
 client.commands = new Collection();
 
+const axios = require('axios');
 const commands = [];
 const commands_inter = new Array();
 const commandsNames = new Array();
@@ -143,31 +162,245 @@ const rest = new REST().setToken(Discord_Bot_Token);
 
 // @ts-ignore
 client.on(Events.InteractionCreate, async interaction => {
-    if (!interaction.isChatInputCommand()) return;
-
-    let x = commandsNames.indexOf(interaction.commandName);
-    let command = commands_inter[x];
-
-    if (!command) {
-        console.error(`No command matching ${interaction.commandName} was found.`);
-        console.error(String(interaction.client.commands));
-        return;
-    }
-
     try {
-        await command.execute(interaction);
-    } catch (error) {
-        console.error(error);
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-        } else {
-            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+        if (!interaction.isChatInputCommand()) return;
+
+        let x = commandsNames.indexOf(interaction.commandName);
+        let command = commands_inter[x];
+
+        if (!command) {
+            console.error(`No command matching ${interaction.commandName} was found.`);
+            console.error(String(interaction.client.commands));
+            return;
         }
+
+        try {
+            await interaction.deferReply({ ephemeral: true })
+            await command.execute(interaction);
+        } catch (error) {
+            console.error(error);
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp({
+                    content: 'There was an error while executing this command!',
+                    ephemeral: true
+                });
+            } else {
+                await interaction.reply({content: 'There was an error while executing this command!', ephemeral: true});
+            }
+        }
+    }catch (e) {
+        // @ts-ignore
+        logger.error(String(e.message));
     }
 });
 
+function DiscordRole_Check(data:any){
+    let v = data[0];
+    let DiscordID = v.Discord;
+    let MainServer = v.GUID;
+    let Job = v.Job;
+
+    let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'https://discord.com/api/v10/guilds/'+String(MainServer)+'/members/'+String(DiscordID),
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Bot OTM4NjA0NDg2MjMzMDU5MzI5.Gkz9Am.PL5toA46XF7ulwY4XA_rLUPw3XcSORQ2HHiDjQ'
+        }
+    };
+        // @ts-ignore
+        axios.request(config)
+            // @ts-ignore
+            .then((response) => {
+                Process_DiscordJob_Res(JSON.stringify(response.data), Job);
+            })
+            // @ts-ignore
+            .catch((error) => {
+                logger.error(String(error));
+                throw error;
+            });
 
 
+
+}
+
+function Process_DiscordJob_Res(data:any, OJob: any){
+    let res = JSON.parse(data);
+    let user = res.user;
+    let roles = res.roles;
+    let isFound = false;
+    let isFound_HC = false;
+
+    if(OJob === "police" || OJob === "Police") {
+        for (let x = 1; x <= Police_HC_Job_IDs.length; x++) {
+            let Job = Police_HC_Job_IDs[x - 1][0];
+            if (roles.indexOf(String(Job.ID)) >= 0) {
+                isFound = true;
+                isFound_HC = true;
+                if(Job.RoleName.includes("Command") || Job.RoleName.includes("Supervisor")){
+                    var Data = [{
+                        DiscordID: user.id,
+                        Job: OJob,
+                        HC: true
+                    }];
+                    Qbcoms.emit("Job_Update", Data);
+                }
+            }
+        }
+        if(!isFound_HC) {
+            for (let x = 1; x <= Police_REG_Job_IDs.length; x++) {
+                let Job = Police_REG_Job_IDs[x - 1][0];
+                if (roles.indexOf(String(Job.ID)) >= 0) {
+                    isFound = true;
+                    var Data = [{
+                        DiscordID: user.id,
+                        Job: OJob,
+                        HC: false
+                    }];
+                    Qbcoms.emit("Job_Update", Data);
+                }
+            }
+        }
+
+        if(!isFound){
+            var D1 = [{
+                DiscordID: user.id,
+                Job: OJob,
+                Error: "User dose not have Job"
+            }];
+            Qbcoms.emit("Job_error", D1);
+        }
+    }
+
+    if(OJob === "rescue" || OJob === "Rescue") {
+        for (let x = 1; x <= Rescue_HC_Job_IDs.length; x++) {
+            let Job = Rescue_HC_Job_IDs[x - 1][0];
+            if (roles.indexOf(String(Job.ID)) >= 0) {
+                isFound = true;
+                isFound_HC = true;
+                if(Job.RoleName.includes("Command") || Job.RoleName.includes("Supervisor")){
+                    var Data = [{
+                        DiscordID: user.id,
+                        Job: OJob,
+                        HC: true
+                    }];
+                    Qbcoms.emit("Job_Update", Data);
+                }
+            }
+        }
+        if(!isFound_HC) {
+            for (let x = 1; x <= Rescue_REG_Job_IDs.length; x++) {
+                let Job = Rescue_REG_Job_IDs[x - 1][0];
+                if (roles.indexOf(String(Job.ID)) >= 0) {
+                    isFound = true;
+                    var Data = [{
+                        DiscordID: user.id,
+                        Job: OJob,
+                        HC: false
+                    }];
+                    Qbcoms.emit("Job_Update", Data);
+                }
+            }
+        }
+
+        if(!isFound){
+            var D1 = [{
+                DiscordID: user.id,
+                Job: OJob,
+                Error: "User dose not have Job"
+            }];
+            Qbcoms.emit("Job_error", D1);
+        }
+    }
+
+    if(OJob === "dispatch" || OJob === "Dispatch") {
+        for (let x = 1; x <= Dispatch_HC_Job_IDs.length; x++) {
+            let Job = Dispatch_HC_Job_IDs[x - 1][0];
+            if (roles.indexOf(String(Job.ID)) >= 0) {
+                isFound = true;
+                isFound_HC = true;
+                if(Job.RoleName.includes("Command") || Job.RoleName.includes("Supervisor")){
+                    var Data = [{
+                        DiscordID: user.id,
+                        Job: OJob,
+                        HC: true
+                    }];
+                    Qbcoms.emit("Job_Update", Data);
+                }
+            }
+        }
+        if(!isFound_HC) {
+            for (let x = 1; x <= Dispatch_REG_Job_IDs.length; x++) {
+                let Job = Dispatch_REG_Job_IDs[x - 1][0];
+                if (roles.indexOf(String(Job.ID)) >= 0) {
+                    isFound = true;
+                    var Data = [{
+                        DiscordID: user.id,
+                        Job: OJob,
+                        HC: false
+                    }];
+                    Qbcoms.emit("Job_Update", Data);
+                }
+            }
+        }
+
+        if(!isFound){
+            var D1 = [{
+                DiscordID: user.id,
+                Job: OJob,
+                Error: "User dose not have Job"
+            }];
+            Qbcoms.emit("Job_error", D1);
+        }
+    }
+
+
+}
+// @ts-ignore
+export const Qbcoms = io.of("/qb").on("connection", (socket)=>{
+    logger.success("GOT CONNECTION REQUEST FROM A QB-CLIENT");
+
+    socket.on("permCheck", function (data:any){
+        let v = data[0];
+        let CommunityKey = v.Key;
+        if(Registered_Community_Keys.indexOf(CommunityKey) >= 0){
+            let DiscordID = v.DiscordID;
+            let Job = v.Job;
+
+            var d = [{
+                Discord: DiscordID,
+                GUID: Discord_Community_GUID,
+                Job: Job
+            }];
+
+            DiscordRole_Check(d);
+
+        }
+    });
+
+    socket.on("syncChar", function (data:any){
+        let v = data[0];
+        let DiscordID = v.DiscordID;
+        let QbID = v.qbID;
+        let First_Name = v.FirstName;
+        let Last_Name = v.LastName;
+        let Phone = v.Phone;
+        let Gender = v.gender;
+        let dob = v.dob;
+
+        var Data = [{
+            FirstName: First_Name,
+            LastName: Last_Name,
+            gender: Gender,
+            dob: dob,
+            Phone: Phone,
+            DiscordID: DiscordID,
+            qbID: QbID
+        }];
+        NewChar_Get_MDT_USER(Data);
+    });
+})
 // @ts-ignore
 export const messaging_server = io.of("/net").on("connection", (socket) => {
 
@@ -185,15 +418,15 @@ export const messaging_server = io.of("/net").on("connection", (socket) => {
 
                 if(user.discordID === v.Discord){
                     let tmp_channels = new Array();
-                    let emb = Emb_Fivem_User_Connected(v.Fivem, v.Discord);
                     let channels = Get_Community_Data(Community_AuthenticationKey, "Channels")[0].Channels;
                     let job = v.CurrJob;
                     console.log("REQUEST FOR RADIO CHANNELS FOR: "+ v.Discord + " FOR JOB: "+ job);
                     let res = Get_Community_Data(Community_AuthenticationKey, "Channels")[0].Channels;
                     console.log(res);
                     if(res === undefined) {
-                        socket.emit("error", "No Radio Channels setup: " + String(job));
-                        var em = Emb_Fivem_User_DENIED_CONNECTION(v.Fivem, v.Discord, "No Radio Channels setup: " + String(job));
+                        socket.emit("error", "Your Job: " + String(job) + " dose not have any current radio channels assigned");
+                        var em = Emb_Fivem_User_DENIED_CONNECTION(v.Fivem, v.Discord, "The fallowing Job dose not have any current radio channels: " + String(job) + " but yet was requested.");
+                        logger.warn("A user with the job: "+ String(job) + " requested a radio channel");
                         Send_Embeded(em, Community_SystemLogs_Discord_Channel);
                         socket.disconnect();
                     }else {
@@ -201,16 +434,28 @@ export const messaging_server = io.of("/net").on("connection", (socket) => {
                             let channel = res[i][0];
                             let chJob = channel.Job;
                             if (CIVILIAN_Jobs.indexOf(String(job)) >= 0) {
-                                if (CIVILIAN_Jobs.indexOf(String(chJob)) >= 0) {
+                                if(String(chJob) === String(job)) {
                                     tmp_channels.push(channel);
                                 }
                             }
                             if (Police_Jobs.indexOf(String(job)) >= 0) {
-                                if (Police_Jobs.indexOf(String(chJob)) >= 0) {
+                                if(String(chJob) === String(job)) {
                                     tmp_channels.push(channel);
                                 }
                             }
                             if (Rescue_Jobs.indexOf(String(job)) >= 0) {
+                                if(String(chJob) === String(job)) {
+                                    tmp_channels.push(channel);
+                                }
+                            }
+                            if (Dispatch_Jobs.indexOf(String(job)) >= 0) {
+                                if(String(chJob) === job){
+                                    logger.success("FOUND DISPATCH JOB!!!");
+                                    tmp_channels.push(channel);
+                                }
+                                if (Police_Jobs.indexOf(String(chJob)) >= 0) {
+                                    tmp_channels.push(channel);
+                                }
                                 if (Rescue_Jobs.indexOf(String(chJob)) >= 0) {
                                     tmp_channels.push(channel);
                                 }
@@ -224,12 +469,17 @@ export const messaging_server = io.of("/net").on("connection", (socket) => {
                         if (tmp_channels.length <= 0) {
                             socket.emit("error", "Radio is not setup for the job: " + String(job));
                             var em = Emb_Fivem_User_DENIED_CONNECTION(v.Fivem, v.Discord, "No Radio Channels for job: " + String(job));
-                            Send_Embeded(em, Community_SystemLogs_Discord_Channel);
+                            if(isRadio_Debug) {
+                                Send_Embeded(em, Community_SystemLogs_Discord_Channel);
+                            }
                             socket.disconnect();
                         } else {
                             socket.emit("Authorized");
                             socket.emit("Channels_INIT", tmp_channels);
-                            Send_Embeded(emb, Community_SystemLogs_Discord_Channel);
+                            if(isRadio_Debug){
+                                let emb = Emb_Fivem_User_Connected(v.Fivem, v.Discord);
+                                Send_Embeded(emb, Community_SystemLogs_Discord_Channel);
+                            }
                         }
                         break;
                     }
@@ -260,11 +510,13 @@ export const messaging_server = io.of("/net").on("connection", (socket) => {
 
     socket.on("EH", function (data:any){
         let d = data[0];
+        logger.error("CLIENT REPORTED AN ERROR: "+ String(d));
         let e = Emb_Radio_User_ERROR_CLIENT(String(d.discord), String(d.Fivem), String(d.hash), String(d.error));
         Send_Embeded(e, Community_ClientError_Discord_Channel);
     });
     socket.on("BUG", function (data:any){
         let d = data[0];
+        logger.error("CLIENT REPORTED AN BUG: "+ String(d))
         let e = Emb_Radio_User_BUG_CLIENT(String(d.discord), String(d.Fivem), String(d.hash), String(d.error));
         Send_Embeded(e, Community_ClientError_Discord_Channel);
     });
@@ -297,15 +549,33 @@ export const messaging_server = io.of("/net").on("connection", (socket) => {
                             let chJob = channel.Job;
                             if (CIVILIAN_Jobs.indexOf(String(job)) >= 0) {
                                 if (CIVILIAN_Jobs.indexOf(String(chJob)) >= 0) {
-                                    tmp_channels.push(channel);
+                                    if(String(chJob) === String(job)) {
+                                        tmp_channels.push(channel);
+                                    }
                                 }
                             }
                             if (Police_Jobs.indexOf(String(job)) >= 0) {
                                 if (Police_Jobs.indexOf(String(chJob)) >= 0) {
-                                    tmp_channels.push(channel);
+                                    if(String(chJob) === String(job)) {
+                                        tmp_channels.push(channel);
+                                    }
                                 }
                             }
                             if (Rescue_Jobs.indexOf(String(job)) >= 0) {
+                                if (Rescue_Jobs.indexOf(String(chJob)) >= 0) {
+                                    if(String(chJob) === String(job)) {
+                                        tmp_channels.push(channel);
+                                    }
+                                }
+                            }
+                            if (Dispatch_Jobs.indexOf(String(job)) >= 0) {
+                                if(String(chJob) === job){
+                                    logger.success("FOUND DISPATCH JOB!!!");
+                                    tmp_channels.push(channel);
+                                }
+                                if (Police_Jobs.indexOf(String(chJob)) >= 0) {
+                                    tmp_channels.push(channel);
+                                }
                                 if (Rescue_Jobs.indexOf(String(chJob)) >= 0) {
                                     tmp_channels.push(channel);
                                 }
@@ -320,7 +590,9 @@ export const messaging_server = io.of("/net").on("connection", (socket) => {
                             socket.disconnect();
                         } else {
                             socket.emit("Channels_Sync", tmp_channels);
-                            Send_Embeded(emb, Community_SystemLogs_Discord_Channel);
+                            if(isRadio_Debug){
+                                Send_Embeded(emb, Community_SystemLogs_Discord_Channel);
+                            }
                         }
                         break;
                     }
@@ -418,9 +690,28 @@ const namespaces = io.of(/^\/dynamic-\d+$/).on('connect', (socket) => {
         logger.error("Socket: "+ socket.id + " Forcibly Disconnected");
         socket.disconnect();
     }
+    socket.on("PTT", function (data:any){
+        logger.info("SET PTT: "+String(data[0].Status));
 
+        var D = [{
+            ChannelID: channelid,
+            DiscordID: data[0].DiscordID,
+            Status: data[0].Status
+        }];
+        ns.emit("PTT", D);
+    });
     socket.on("vc_packet", function (data:any){
         logger.info("VC SENDING PACKET IN: "+ newNamespace);
+        if(channelid === String(Dispatch_ChannelID)){
+            for(let o = 0; o <= Registered_STATE_RadioChannels.length -1; o++){
+                io.of('/dynamic-'+String(Registered_STATE_RadioChannels[o])).emit("vc_packet", socket.id, data);
+                logger.debug("SENDING VOICE PACKET TO STATE CHANNELS");
+            }
+        }
+        if(Registered_STATE_RadioChannels.indexOf(Number(channelid)) >= 0){
+            io.of('/dynamic-'+String(Dispatch_ChannelID)).emit("vc_packet", socket.id, data);
+            logger.debug("STATE UNIT TALKING TO DISPATCH");
+        }
         ns.emit("vc_packet", socket.id, data);
     });
 
@@ -460,6 +751,191 @@ app.get('/sounds/pttactive.mp3', function (req, res) {
         res.end(content);
     }
 });
+
+app.get('/char/:charID/:disc', function (req, res) {
+    try {
+        let DiscID = req.params.disc;
+        let CharID = req.params.charID;
+        let d = DiscID.replace("discord:", "");
+        let users_arr = Get_Community_Data(Community_AuthenticationKey, "Users");
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        if(DiscID != undefined) {
+           var o = [{
+               DiscordID: d,
+               qbID: CharID
+           }];
+            Proc_Delete_Char(o);
+        }else{
+            console.log("DATA IS UNDEFINED");
+        }
+        res.end();
+
+    }catch (err){
+        let content = readFileSync("200.html");
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(content);
+    }
+});
+
+// @ts-ignore
+app.get('/char/new/:qbID/:firstname/:lastname/:gender/:dob/:phonenumber/:discordID', function (req, res) {
+    try {
+        let QBID = req.params.qbID;
+        let firstname = req.params.firstname;
+        let lastname = req.params.lastname;
+        let dob = req.params.dob;
+        let phonenumber = req.params.phonenumber;
+        let discID = req.params.discordID;
+        let gender = req.params.gender;
+        let isfound = false;
+
+
+        let users_arr = Get_Community_Data(Community_AuthenticationKey, "Users");
+        for (let x = 0; x <= users_arr.length - 1; x++) {
+            let o = users_arr[x];
+            console.log(o);
+            let user = o;
+            if (String(user.discordID) === String(discID)) {
+                isfound = true;
+                break;
+            }
+        }
+
+        if(!isfound){
+            let content = readFileSync("200.html");
+            res.writeHead(500, { 'Content-Type': 'text/html' });
+            res.end(content)
+        }
+
+        if(isfound){
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.write("DONE");
+            res.end();
+
+            var Data = [{
+                FirstName: firstname,
+                LastName: lastname,
+                gender: gender,
+                dob: dob,
+                Phone: phonenumber,
+                DiscordID: discID,
+                qbID: QBID
+            }];
+            NewChar_Get_MDT_USER(Data);
+        }
+
+
+
+
+    }catch (err){
+        let content = readFileSync("200.html");
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(content);
+    }
+});
+//@ts-ignore
+app.get('/isallow/:disc', function (req, res) {
+    try {
+        let DiscID = req.params.disc;
+        let users_arr = Get_Community_Data(Community_AuthenticationKey, "Users");
+        let ISFOUND = false;
+        console.log(DiscID);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        if(DiscID != undefined) {
+            for (let x = 0; x <= users_arr.length -1; x++) {
+                let o = users_arr[x];
+                let user = o;
+                if (JSON.stringify(user.discordID) === JSON.stringify(DiscID)) {
+                    console.log("USER: " + DiscID + " ALLOWED");
+                    ISFOUND = true;
+                    break;
+                }
+            }
+        }else{
+            console.log("DATA IS UNDEFINED");
+        }
+        if(ISFOUND){
+            var d = [{
+                result: true
+            }]
+            res.write(String(JSON.stringify(d)));
+        }
+        if(!ISFOUND){
+            var d1 = [{
+                result: false
+            }]
+            res.write(String(JSON.stringify(d1)));
+        }
+        res.end();
+
+    }catch (err){
+        let content = readFileSync("200.html");
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(content);
+    }
+});
+
+app.get('/user/details/:disc', function (req, res) {
+    try {
+        let DiscID = req.params.disc;
+        let users_arr = Get_Community_Data(Community_AuthenticationKey, "Users");
+        console.log(DiscID);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        if(DiscID != undefined) {
+            for (let x = 0; x <= users_arr.length -1; x++) {
+                let o = users_arr[x];
+                let user = o;
+                if (JSON.stringify(user.discordID) === JSON.stringify(DiscID)) {
+                    console.log("USER: " + DiscID + " ALLOWED");
+                    res.write(JSON.stringify(user));
+                    break;
+                }
+            }
+        }else{
+            console.log("DATA IS UNDEFINED");
+        }
+        res.end();
+
+    }catch (err){
+        let content = readFileSync("200.html");
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(content);
+    }
+});
+
+// @ts-ignore
+app.get('/mdt/user/:discord', function (req, res) {
+    try {
+        var id = req.params.discord;
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        const axios = require('axios');
+
+        let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: 'https://api-mdt.unitedroleplay.me/v1/admin/manage/users/'+String(id),
+            headers: {
+                'snaily-cad-api-token': 'sng_QT7kGavi0pcq6Bdfzd6e9YdrdZJC-aB6AhNx74klcD4PLCxzxk9Itm4N'
+            }
+        };
+
+        axios.request(config)
+            .then((response: { data: any; }) => {
+                res.write(JSON.stringify(response.data));
+            })
+            .catch((error: any) => {
+                console.log(error);
+            });
+
+        res.end();
+
+
+    }catch (err){
+        let content = readFileSync("200.html");
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end();
+    }
+});
 // @ts-ignore
 app.get('/channels/info', function (req, res) {
     try {
@@ -496,6 +972,21 @@ app.get('/sounds/pttdisabled.mp3', function (req, res) {
 app.get('/sounds/panic-button.mp3', function (req, res) {
     try {
         let content = readFileSync("panic-button.mp3");
+        res.writeHead(200, { 'Content-Type': 'application/mp3' });
+        res.write(content);
+        res.end();
+
+
+    }catch (err){
+        let content = readFileSync("200.html");
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(content);
+    }
+});
+// @ts-ignore
+app.get('/sounds/pttdeny.mp3', function (req, res) {
+    try {
+        let content = readFileSync("mic_deny.mp3");
         res.writeHead(200, { 'Content-Type': 'application/mp3' });
         res.write(content);
         res.end();

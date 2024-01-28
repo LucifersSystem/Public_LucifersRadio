@@ -59,11 +59,11 @@ var Logger = /** @class */ (function () {
                     _Discord_webhook.set(this, process.env.DISCORD_WEBHOOK || "");
                     // @ts-ignore
                     _Discord_postWebhook.set(this, function (data) { return __awaiter(_this, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
+                        return __generator(this, function (_b) {
+                            switch (_b.label) {
                                 case 0: return [4 /*yield*/, axios_1.default.post(__classPrivateFieldGet(this, _Discord_webhook, "f"), data)];
                                 case 1:
-                                    _a.sent();
+                                    _b.sent();
                                     return [2 /*return*/];
                             }
                         });

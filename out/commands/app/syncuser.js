@@ -53,13 +53,17 @@ module.exports = {
         .setDescription('Manually Syncs the Discord User with the Community Radio System'),
     execute: function (interaction) {
         return __awaiter(this, void 0, void 0, function () {
-            var interactionUser, userId, channelID, isfound, users_arr, x, o, user, e, R;
+            var interactionUser, userId, channelID, isfound, users_arr, x, o, user, e, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, interaction.guild.members.fetch(interaction.user.id)];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        interaction.editReply(".");
+                        return [4 /*yield*/, interaction.guild.members.fetch(interaction.user.id)];
                     case 1:
                         interactionUser = _a.sent();
                         userId = interactionUser.id;
+                        console_1.default.log(userId);
                         channelID = interaction.channelId;
                         isfound = false;
                         users_arr = (0, Structures_1.Get_Community_Data)(Settings_1.Community_AuthenticationKey, "Users");
@@ -75,10 +79,15 @@ module.exports = {
                             }
                         }
                         if (!isfound || users_arr.length == 0) {
-                            R = (0, System_1.Create_User)(channelID, Settings_1.Community_AuthenticationKey, userId, interactionUser.user.username);
+                            (0, System_1.Create_User)(channelID, Settings_1.Community_AuthenticationKey, userId, interactionUser.user.username, String(null));
                         }
-                        interaction.reply(".");
-                        return [2 /*return*/];
+                        return [3 /*break*/, 3];
+                    case 2:
+                        e_1 = _a.sent();
+                        // @ts-ignore
+                        interaction.editreply(String(e_1.message));
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
                 }
             });
         });

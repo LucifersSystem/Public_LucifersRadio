@@ -1,9 +1,16 @@
+local core = exports['qb-core']:GetCoreObject()
+
 exports('Drawgps', function(x,y,z)
 	print("Drawing GPS Route")
     ClearGpsCustomRoute()
     StartGpsMultiRoute(6, false, true)
     AddPointToGpsCustomRoute(x,y,y)
     SetGpsCustomRouteRender(true, 16, 16)
+end)
+exports('setDispJob', function(DiscordID)
+    local Player = QBCore.Functions.GetPlayerData()
+	print("Checking Dispatch Job For: "..DiscordID)
+
 end)
 
 exports('dispUpdate', function(btn01,btn02,btn03,btn04,btn05,ln01,ln02,zn,ch)

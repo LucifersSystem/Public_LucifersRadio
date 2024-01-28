@@ -62,7 +62,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.messaging_server = exports.client = void 0;
+exports.messaging_server = exports.Qbcoms = exports.client = void 0;
 // @ts-ignore
 var express_1 = __importDefault(require("express"));
 var Logger_1 = __importDefault(require("./Classes/Logger"));
@@ -104,20 +104,26 @@ httpsServer.listen(Settings_1.HTTPS_PORT, function () {
 httpServer.listen(Settings_1.HTTP_PORT, function () {
     logger.info('WS/HTTP Server running on port ' + Settings_1.HTTP_PORT);
     (0, Structures_1.Add_Community)(Settings_1.Community_Name, Settings_1.Community_AuthenticationKey, Settings_1.Community_Owner);
+    (0, Structures_1.Add_Community_Radio_Channel)(Settings_1.Community_AuthenticationKey, Settings_1.Dispatch_ChannelID, "DISPATCH", Settings_1.Dispatch_Jobs[0]);
     (0, sql_1.Load_SyncUsers)();
     (0, sql_1.Load_Channels)();
     (0, sql_1.Load_AuthorizedUsers)();
+    (0, sql_1.Load_Chars)();
 });
 logger.success("SYSTEM STARTED");
 var io = require('socket.io')(httpServer, { pingTimeout: 60000, allowEIO3: true, origin: "*",
     methods: ["GET", "POST", "OPTIONS"], transports: ['websocket', 'polling', 'flashsocket'] });
 exports.client.once(Events.ClientReady, function (c) {
     var p = (0, embedcreator_1.System_Status)("STARTED");
-    (0, System_1.Send_Embeded)(p, Settings_1.Community_SystemLogs_Discord_Channel);
+    if (Settings_1.isRadio_Debug) {
+        (0, System_1.Send_Embeded)(p, Settings_1.Community_SystemLogs_Discord_Channel);
+    }
+    logger.success("SYSTEM STARTED");
     logger.warn("Ready! Logged in as ".concat(c.user.tag));
 });
 exports.client.login(Settings_1.Discord_Bot_Token);
 exports.client.commands = new Collection();
+var axios = require('axios');
 var commands = [];
 var commands_inter = new Array();
 var commandsNames = new Array();
@@ -170,10 +176,11 @@ var rest = new discord_js_1.REST().setToken(Settings_1.Discord_Bot_Token);
 }); })();
 // @ts-ignore
 exports.client.on(Events.InteractionCreate, function (interaction) { return __awaiter(void 0, void 0, void 0, function () {
-    var x, command, error_2;
+    var x, command, error_2, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                _a.trys.push([0, 10, , 11]);
                 if (!interaction.isChatInputCommand())
                     return [2 /*return*/];
                 x = commandsNames.indexOf(interaction.commandName);
@@ -185,28 +192,228 @@ exports.client.on(Events.InteractionCreate, function (interaction) { return __aw
                 }
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 3, , 8]);
-                return [4 /*yield*/, command.execute(interaction)];
+                _a.trys.push([1, 4, , 9]);
+                return [4 /*yield*/, interaction.deferReply({ ephemeral: true })];
             case 2:
                 _a.sent();
-                return [3 /*break*/, 8];
+                return [4 /*yield*/, command.execute(interaction)];
             case 3:
+                _a.sent();
+                return [3 /*break*/, 9];
+            case 4:
                 error_2 = _a.sent();
                 console_1.default.error(error_2);
-                if (!(interaction.replied || interaction.deferred)) return [3 /*break*/, 5];
-                return [4 /*yield*/, interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true })];
-            case 4:
+                if (!(interaction.replied || interaction.deferred)) return [3 /*break*/, 6];
+                return [4 /*yield*/, interaction.followUp({
+                        content: 'There was an error while executing this command!',
+                        ephemeral: true
+                    })];
+            case 5:
                 _a.sent();
-                return [3 /*break*/, 7];
-            case 5: return [4 /*yield*/, interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true })];
-            case 6:
+                return [3 /*break*/, 8];
+            case 6: return [4 /*yield*/, interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true })];
+            case 7:
                 _a.sent();
-                _a.label = 7;
-            case 7: return [3 /*break*/, 8];
-            case 8: return [2 /*return*/];
+                _a.label = 8;
+            case 8: return [3 /*break*/, 9];
+            case 9: return [3 /*break*/, 11];
+            case 10:
+                e_1 = _a.sent();
+                // @ts-ignore
+                logger.error(String(e_1.message));
+                return [3 /*break*/, 11];
+            case 11: return [2 /*return*/];
         }
     });
 }); });
+function DiscordRole_Check(data) {
+    var v = data[0];
+    var DiscordID = v.Discord;
+    var MainServer = v.GUID;
+    var Job = v.Job;
+    var config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'https://discord.com/api/v10/guilds/' + String(MainServer) + '/members/' + String(DiscordID),
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Bot OTM4NjA0NDg2MjMzMDU5MzI5.Gkz9Am.PL5toA46XF7ulwY4XA_rLUPw3XcSORQ2HHiDjQ'
+        }
+    };
+    // @ts-ignore
+    axios.request(config)
+        // @ts-ignore
+        .then(function (response) {
+        Process_DiscordJob_Res(JSON.stringify(response.data), Job);
+    })
+        // @ts-ignore
+        .catch(function (error) {
+        logger.error(String(error));
+        throw error;
+    });
+}
+function Process_DiscordJob_Res(data, OJob) {
+    var res = JSON.parse(data);
+    var user = res.user;
+    var roles = res.roles;
+    var isFound = false;
+    var isFound_HC = false;
+    if (OJob === "police" || OJob === "Police") {
+        for (var x = 1; x <= Settings_1.Police_HC_Job_IDs.length; x++) {
+            var Job = Settings_1.Police_HC_Job_IDs[x - 1][0];
+            if (roles.indexOf(String(Job.ID)) >= 0) {
+                isFound = true;
+                isFound_HC = true;
+                if (Job.RoleName.includes("Command") || Job.RoleName.includes("Supervisor")) {
+                    var Data = [{
+                            DiscordID: user.id,
+                            Job: OJob,
+                            HC: true
+                        }];
+                    exports.Qbcoms.emit("Job_Update", Data);
+                }
+            }
+        }
+        if (!isFound_HC) {
+            for (var x = 1; x <= Settings_1.Police_REG_Job_IDs.length; x++) {
+                var Job = Settings_1.Police_REG_Job_IDs[x - 1][0];
+                if (roles.indexOf(String(Job.ID)) >= 0) {
+                    isFound = true;
+                    var Data = [{
+                            DiscordID: user.id,
+                            Job: OJob,
+                            HC: false
+                        }];
+                    exports.Qbcoms.emit("Job_Update", Data);
+                }
+            }
+        }
+        if (!isFound) {
+            var D1 = [{
+                    DiscordID: user.id,
+                    Job: OJob,
+                    Error: "User dose not have Job"
+                }];
+            exports.Qbcoms.emit("Job_error", D1);
+        }
+    }
+    if (OJob === "rescue" || OJob === "Rescue") {
+        for (var x = 1; x <= Settings_1.Rescue_HC_Job_IDs.length; x++) {
+            var Job = Settings_1.Rescue_HC_Job_IDs[x - 1][0];
+            if (roles.indexOf(String(Job.ID)) >= 0) {
+                isFound = true;
+                isFound_HC = true;
+                if (Job.RoleName.includes("Command") || Job.RoleName.includes("Supervisor")) {
+                    var Data = [{
+                            DiscordID: user.id,
+                            Job: OJob,
+                            HC: true
+                        }];
+                    exports.Qbcoms.emit("Job_Update", Data);
+                }
+            }
+        }
+        if (!isFound_HC) {
+            for (var x = 1; x <= Settings_1.Rescue_REG_Job_IDs.length; x++) {
+                var Job = Settings_1.Rescue_REG_Job_IDs[x - 1][0];
+                if (roles.indexOf(String(Job.ID)) >= 0) {
+                    isFound = true;
+                    var Data = [{
+                            DiscordID: user.id,
+                            Job: OJob,
+                            HC: false
+                        }];
+                    exports.Qbcoms.emit("Job_Update", Data);
+                }
+            }
+        }
+        if (!isFound) {
+            var D1 = [{
+                    DiscordID: user.id,
+                    Job: OJob,
+                    Error: "User dose not have Job"
+                }];
+            exports.Qbcoms.emit("Job_error", D1);
+        }
+    }
+    if (OJob === "dispatch" || OJob === "Dispatch") {
+        for (var x = 1; x <= Settings_1.Dispatch_HC_Job_IDs.length; x++) {
+            var Job = Settings_1.Dispatch_HC_Job_IDs[x - 1][0];
+            if (roles.indexOf(String(Job.ID)) >= 0) {
+                isFound = true;
+                isFound_HC = true;
+                if (Job.RoleName.includes("Command") || Job.RoleName.includes("Supervisor")) {
+                    var Data = [{
+                            DiscordID: user.id,
+                            Job: OJob,
+                            HC: true
+                        }];
+                    exports.Qbcoms.emit("Job_Update", Data);
+                }
+            }
+        }
+        if (!isFound_HC) {
+            for (var x = 1; x <= Settings_1.Dispatch_REG_Job_IDs.length; x++) {
+                var Job = Settings_1.Dispatch_REG_Job_IDs[x - 1][0];
+                if (roles.indexOf(String(Job.ID)) >= 0) {
+                    isFound = true;
+                    var Data = [{
+                            DiscordID: user.id,
+                            Job: OJob,
+                            HC: false
+                        }];
+                    exports.Qbcoms.emit("Job_Update", Data);
+                }
+            }
+        }
+        if (!isFound) {
+            var D1 = [{
+                    DiscordID: user.id,
+                    Job: OJob,
+                    Error: "User dose not have Job"
+                }];
+            exports.Qbcoms.emit("Job_error", D1);
+        }
+    }
+}
+// @ts-ignore
+exports.Qbcoms = io.of("/qb").on("connection", function (socket) {
+    logger.success("GOT CONNECTION REQUEST FROM A QB-CLIENT");
+    socket.on("permCheck", function (data) {
+        var v = data[0];
+        var CommunityKey = v.Key;
+        if (Structures_1.Registered_Community_Keys.indexOf(CommunityKey) >= 0) {
+            var DiscordID = v.DiscordID;
+            var Job = v.Job;
+            var d = [{
+                    Discord: DiscordID,
+                    GUID: Settings_1.Discord_Community_GUID,
+                    Job: Job
+                }];
+            DiscordRole_Check(d);
+        }
+    });
+    socket.on("syncChar", function (data) {
+        var v = data[0];
+        var DiscordID = v.DiscordID;
+        var QbID = v.qbID;
+        var First_Name = v.FirstName;
+        var Last_Name = v.LastName;
+        var Phone = v.Phone;
+        var Gender = v.gender;
+        var dob = v.dob;
+        var Data = [{
+                FirstName: First_Name,
+                LastName: Last_Name,
+                gender: Gender,
+                dob: dob,
+                Phone: Phone,
+                DiscordID: DiscordID,
+                qbID: QbID
+            }];
+        (0, System_1.NewChar_Get_MDT_USER)(Data);
+    });
+});
 // @ts-ignore
 exports.messaging_server = io.of("/net").on("connection", function (socket) {
     logger.info("Got Connection from socket: " + socket.id);
@@ -221,15 +428,15 @@ exports.messaging_server = io.of("/net").on("connection", function (socket) {
                 var user = users_arr[x];
                 if (user.discordID === v.Discord) {
                     var tmp_channels = new Array();
-                    var emb = (0, embedcreator_1.Emb_Fivem_User_Connected)(v.Fivem, v.Discord);
                     var channels = (0, Structures_1.Get_Community_Data)(Settings_1.Community_AuthenticationKey, "Channels")[0].Channels;
                     var job = v.CurrJob;
                     console_1.default.log("REQUEST FOR RADIO CHANNELS FOR: " + v.Discord + " FOR JOB: " + job);
                     var res = (0, Structures_1.Get_Community_Data)(Settings_1.Community_AuthenticationKey, "Channels")[0].Channels;
                     console_1.default.log(res);
                     if (res === undefined) {
-                        socket.emit("error", "No Radio Channels setup: " + String(job));
-                        var em = (0, embedcreator_1.Emb_Fivem_User_DENIED_CONNECTION)(v.Fivem, v.Discord, "No Radio Channels setup: " + String(job));
+                        socket.emit("error", "Your Job: " + String(job) + " dose not have any current radio channels assigned");
+                        var em = (0, embedcreator_1.Emb_Fivem_User_DENIED_CONNECTION)(v.Fivem, v.Discord, "The fallowing Job dose not have any current radio channels: " + String(job) + " but yet was requested.");
+                        logger.warn("A user with the job: " + String(job) + " requested a radio channel");
                         (0, System_1.Send_Embeded)(em, Settings_1.Community_SystemLogs_Discord_Channel);
                         socket.disconnect();
                     }
@@ -238,16 +445,28 @@ exports.messaging_server = io.of("/net").on("connection", function (socket) {
                             var channel = res[i][0];
                             var chJob = channel.Job;
                             if (Settings_1.CIVILIAN_Jobs.indexOf(String(job)) >= 0) {
-                                if (Settings_1.CIVILIAN_Jobs.indexOf(String(chJob)) >= 0) {
+                                if (String(chJob) === String(job)) {
                                     tmp_channels.push(channel);
                                 }
                             }
                             if (Settings_1.Police_Jobs.indexOf(String(job)) >= 0) {
-                                if (Settings_1.Police_Jobs.indexOf(String(chJob)) >= 0) {
+                                if (String(chJob) === String(job)) {
                                     tmp_channels.push(channel);
                                 }
                             }
                             if (Settings_1.Rescue_Jobs.indexOf(String(job)) >= 0) {
+                                if (String(chJob) === String(job)) {
+                                    tmp_channels.push(channel);
+                                }
+                            }
+                            if (Settings_1.Dispatch_Jobs.indexOf(String(job)) >= 0) {
+                                if (String(chJob) === job) {
+                                    logger.success("FOUND DISPATCH JOB!!!");
+                                    tmp_channels.push(channel);
+                                }
+                                if (Settings_1.Police_Jobs.indexOf(String(chJob)) >= 0) {
+                                    tmp_channels.push(channel);
+                                }
                                 if (Settings_1.Rescue_Jobs.indexOf(String(chJob)) >= 0) {
                                     tmp_channels.push(channel);
                                 }
@@ -261,13 +480,18 @@ exports.messaging_server = io.of("/net").on("connection", function (socket) {
                         if (tmp_channels.length <= 0) {
                             socket.emit("error", "Radio is not setup for the job: " + String(job));
                             var em = (0, embedcreator_1.Emb_Fivem_User_DENIED_CONNECTION)(v.Fivem, v.Discord, "No Radio Channels for job: " + String(job));
-                            (0, System_1.Send_Embeded)(em, Settings_1.Community_SystemLogs_Discord_Channel);
+                            if (Settings_1.isRadio_Debug) {
+                                (0, System_1.Send_Embeded)(em, Settings_1.Community_SystemLogs_Discord_Channel);
+                            }
                             socket.disconnect();
                         }
                         else {
                             socket.emit("Authorized");
                             socket.emit("Channels_INIT", tmp_channels);
-                            (0, System_1.Send_Embeded)(emb, Settings_1.Community_SystemLogs_Discord_Channel);
+                            if (Settings_1.isRadio_Debug) {
+                                var emb = (0, embedcreator_1.Emb_Fivem_User_Connected)(v.Fivem, v.Discord);
+                                (0, System_1.Send_Embeded)(emb, Settings_1.Community_SystemLogs_Discord_Channel);
+                            }
                         }
                         break;
                     }
@@ -290,11 +514,13 @@ exports.messaging_server = io.of("/net").on("connection", function (socket) {
     });
     socket.on("EH", function (data) {
         var d = data[0];
+        logger.error("CLIENT REPORTED AN ERROR: " + String(d));
         var e = (0, embedcreator_1.Emb_Radio_User_ERROR_CLIENT)(String(d.discord), String(d.Fivem), String(d.hash), String(d.error));
         (0, System_1.Send_Embeded)(e, Settings_1.Community_ClientError_Discord_Channel);
     });
     socket.on("BUG", function (data) {
         var d = data[0];
+        logger.error("CLIENT REPORTED AN BUG: " + String(d));
         var e = (0, embedcreator_1.Emb_Radio_User_BUG_CLIENT)(String(d.discord), String(d.Fivem), String(d.hash), String(d.error));
         (0, System_1.Send_Embeded)(e, Settings_1.Community_ClientError_Discord_Channel);
     });
@@ -326,15 +552,33 @@ exports.messaging_server = io.of("/net").on("connection", function (socket) {
                             var chJob = channel.Job;
                             if (Settings_1.CIVILIAN_Jobs.indexOf(String(job)) >= 0) {
                                 if (Settings_1.CIVILIAN_Jobs.indexOf(String(chJob)) >= 0) {
-                                    tmp_channels.push(channel);
+                                    if (String(chJob) === String(job)) {
+                                        tmp_channels.push(channel);
+                                    }
                                 }
                             }
                             if (Settings_1.Police_Jobs.indexOf(String(job)) >= 0) {
                                 if (Settings_1.Police_Jobs.indexOf(String(chJob)) >= 0) {
-                                    tmp_channels.push(channel);
+                                    if (String(chJob) === String(job)) {
+                                        tmp_channels.push(channel);
+                                    }
                                 }
                             }
                             if (Settings_1.Rescue_Jobs.indexOf(String(job)) >= 0) {
+                                if (Settings_1.Rescue_Jobs.indexOf(String(chJob)) >= 0) {
+                                    if (String(chJob) === String(job)) {
+                                        tmp_channels.push(channel);
+                                    }
+                                }
+                            }
+                            if (Settings_1.Dispatch_Jobs.indexOf(String(job)) >= 0) {
+                                if (String(chJob) === job) {
+                                    logger.success("FOUND DISPATCH JOB!!!");
+                                    tmp_channels.push(channel);
+                                }
+                                if (Settings_1.Police_Jobs.indexOf(String(chJob)) >= 0) {
+                                    tmp_channels.push(channel);
+                                }
                                 if (Settings_1.Rescue_Jobs.indexOf(String(chJob)) >= 0) {
                                     tmp_channels.push(channel);
                                 }
@@ -350,7 +594,9 @@ exports.messaging_server = io.of("/net").on("connection", function (socket) {
                         }
                         else {
                             socket.emit("Channels_Sync", tmp_channels);
-                            (0, System_1.Send_Embeded)(emb, Settings_1.Community_SystemLogs_Discord_Channel);
+                            if (Settings_1.isRadio_Debug) {
+                                (0, System_1.Send_Embeded)(emb, Settings_1.Community_SystemLogs_Discord_Channel);
+                            }
                         }
                         break;
                     }
@@ -435,8 +681,27 @@ var namespaces = io.of(/^\/dynamic-\d+$/).on('connect', function (socket) {
         logger.error("Socket: " + socket.id + " Forcibly Disconnected");
         socket.disconnect();
     }
+    socket.on("PTT", function (data) {
+        logger.info("SET PTT: " + String(data[0].Status));
+        var D = [{
+                ChannelID: channelid,
+                DiscordID: data[0].DiscordID,
+                Status: data[0].Status
+            }];
+        ns.emit("PTT", D);
+    });
     socket.on("vc_packet", function (data) {
         logger.info("VC SENDING PACKET IN: " + newNamespace);
+        if (channelid === String(Settings_1.Dispatch_ChannelID)) {
+            for (var o = 0; o <= Structures_1.Registered_STATE_RadioChannels.length - 1; o++) {
+                io.of('/dynamic-' + String(Structures_1.Registered_STATE_RadioChannels[o])).emit("vc_packet", socket.id, data);
+                logger.debug("SENDING VOICE PACKET TO STATE CHANNELS");
+            }
+        }
+        if (Structures_1.Registered_STATE_RadioChannels.indexOf(Number(channelid)) >= 0) {
+            io.of('/dynamic-' + String(Settings_1.Dispatch_ChannelID)).emit("vc_packet", socket.id, data);
+            logger.debug("STATE UNIT TALKING TO DISPATCH");
+        }
         ns.emit("vc_packet", socket.id, data);
     });
     socket.on("priority_active", function (data) {
@@ -468,6 +733,178 @@ app.get('/sounds/pttactive.mp3', function (req, res) {
         var content = (0, fs_1.readFileSync)("200.html");
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(content);
+    }
+});
+app.get('/char/:charID/:disc', function (req, res) {
+    try {
+        var DiscID = req.params.disc;
+        var CharID = req.params.charID;
+        var d = DiscID.replace("discord:", "");
+        var users_arr = (0, Structures_1.Get_Community_Data)(Settings_1.Community_AuthenticationKey, "Users");
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        if (DiscID != undefined) {
+            var o = [{
+                    DiscordID: d,
+                    qbID: CharID
+                }];
+            (0, System_1.Proc_Delete_Char)(o);
+        }
+        else {
+            console_1.default.log("DATA IS UNDEFINED");
+        }
+        res.end();
+    }
+    catch (err) {
+        var content = (0, fs_1.readFileSync)("200.html");
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(content);
+    }
+});
+// @ts-ignore
+app.get('/char/new/:qbID/:firstname/:lastname/:gender/:dob/:phonenumber/:discordID', function (req, res) {
+    try {
+        var QBID = req.params.qbID;
+        var firstname = req.params.firstname;
+        var lastname = req.params.lastname;
+        var dob = req.params.dob;
+        var phonenumber = req.params.phonenumber;
+        var discID = req.params.discordID;
+        var gender = req.params.gender;
+        var isfound = false;
+        var users_arr = (0, Structures_1.Get_Community_Data)(Settings_1.Community_AuthenticationKey, "Users");
+        for (var x = 0; x <= users_arr.length - 1; x++) {
+            var o = users_arr[x];
+            console_1.default.log(o);
+            var user = o;
+            if (String(user.discordID) === String(discID)) {
+                isfound = true;
+                break;
+            }
+        }
+        if (!isfound) {
+            var content = (0, fs_1.readFileSync)("200.html");
+            res.writeHead(500, { 'Content-Type': 'text/html' });
+            res.end(content);
+        }
+        if (isfound) {
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.write("DONE");
+            res.end();
+            var Data = [{
+                    FirstName: firstname,
+                    LastName: lastname,
+                    gender: gender,
+                    dob: dob,
+                    Phone: phonenumber,
+                    DiscordID: discID,
+                    qbID: QBID
+                }];
+            (0, System_1.NewChar_Get_MDT_USER)(Data);
+        }
+    }
+    catch (err) {
+        var content = (0, fs_1.readFileSync)("200.html");
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(content);
+    }
+});
+//@ts-ignore
+app.get('/isallow/:disc', function (req, res) {
+    try {
+        var DiscID = req.params.disc;
+        var users_arr = (0, Structures_1.Get_Community_Data)(Settings_1.Community_AuthenticationKey, "Users");
+        var ISFOUND = false;
+        console_1.default.log(DiscID);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        if (DiscID != undefined) {
+            for (var x = 0; x <= users_arr.length - 1; x++) {
+                var o = users_arr[x];
+                var user = o;
+                if (JSON.stringify(user.discordID) === JSON.stringify(DiscID)) {
+                    console_1.default.log("USER: " + DiscID + " ALLOWED");
+                    ISFOUND = true;
+                    break;
+                }
+            }
+        }
+        else {
+            console_1.default.log("DATA IS UNDEFINED");
+        }
+        if (ISFOUND) {
+            var d = [{
+                    result: true
+                }];
+            res.write(String(JSON.stringify(d)));
+        }
+        if (!ISFOUND) {
+            var d1 = [{
+                    result: false
+                }];
+            res.write(String(JSON.stringify(d1)));
+        }
+        res.end();
+    }
+    catch (err) {
+        var content = (0, fs_1.readFileSync)("200.html");
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(content);
+    }
+});
+app.get('/user/details/:disc', function (req, res) {
+    try {
+        var DiscID = req.params.disc;
+        var users_arr = (0, Structures_1.Get_Community_Data)(Settings_1.Community_AuthenticationKey, "Users");
+        console_1.default.log(DiscID);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        if (DiscID != undefined) {
+            for (var x = 0; x <= users_arr.length - 1; x++) {
+                var o = users_arr[x];
+                var user = o;
+                if (JSON.stringify(user.discordID) === JSON.stringify(DiscID)) {
+                    console_1.default.log("USER: " + DiscID + " ALLOWED");
+                    res.write(JSON.stringify(user));
+                    break;
+                }
+            }
+        }
+        else {
+            console_1.default.log("DATA IS UNDEFINED");
+        }
+        res.end();
+    }
+    catch (err) {
+        var content = (0, fs_1.readFileSync)("200.html");
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(content);
+    }
+});
+// @ts-ignore
+app.get('/mdt/user/:discord', function (req, res) {
+    try {
+        var id = req.params.discord;
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        var axios_1 = require('axios');
+        var config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: 'https://api-mdt.unitedroleplay.me/v1/admin/manage/users/' + String(id),
+            headers: {
+                'snaily-cad-api-token': 'sng_QT7kGavi0pcq6Bdfzd6e9YdrdZJC-aB6AhNx74klcD4PLCxzxk9Itm4N'
+            }
+        };
+        axios_1.request(config)
+            .then(function (response) {
+            res.write(JSON.stringify(response.data));
+        })
+            .catch(function (error) {
+            console_1.default.log(error);
+        });
+        res.end();
+    }
+    catch (err) {
+        var content = (0, fs_1.readFileSync)("200.html");
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end();
     }
 });
 // @ts-ignore
@@ -504,6 +941,20 @@ app.get('/sounds/pttdisabled.mp3', function (req, res) {
 app.get('/sounds/panic-button.mp3', function (req, res) {
     try {
         var content = (0, fs_1.readFileSync)("panic-button.mp3");
+        res.writeHead(200, { 'Content-Type': 'application/mp3' });
+        res.write(content);
+        res.end();
+    }
+    catch (err) {
+        var content = (0, fs_1.readFileSync)("200.html");
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(content);
+    }
+});
+// @ts-ignore
+app.get('/sounds/pttdeny.mp3', function (req, res) {
+    try {
+        var content = (0, fs_1.readFileSync)("mic_deny.mp3");
         res.writeHead(200, { 'Content-Type': 'application/mp3' });
         res.write(content);
         res.end();
