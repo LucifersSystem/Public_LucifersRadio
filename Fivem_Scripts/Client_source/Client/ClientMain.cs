@@ -26,7 +26,6 @@ namespace LucifersRadio.Client
         protected internal static Action powerOffInternal;
         protected internal static Action<string> ledmodeInternal;
         protected internal static Action<string> showAlertInternal;
-        protected internal static Action<string> setModelInternal;
         protected internal static Action<bool> pttInternal;
         protected internal static Action<string> channelChangeInternal;
         protected internal static Action<bool> setVisibilityInternal;
@@ -36,8 +35,8 @@ namespace LucifersRadio.Client
         protected internal static Action<string, string, string> Drawgps;
         protected internal static Action<string, int> SetJOB;
 
-
-
+        bool isVmenu_Server = false; //ONLY CHANGE TO TRUE IF NOT QBCORE OR ESX OR A INTEGRATABLE FRAMEWORK!!!!
+        bool radio_type = true;
         bool isDevMode = false;
         bool isRadioActive = false;
         bool isSystemMessagingActive = false;
@@ -46,7 +45,7 @@ namespace LucifersRadio.Client
         public bool isConnnected = false;
         public int Curr_Volume = 0;
         public int Radio_MaxChannels = 0;
-        public string Radio_CommunityName = "United RP";
+        public string Radio_CommunityName = "DEMO RP";
         public string CurrChannelName = "";
         public int CurrChannel = 0;
         public bool isFocused = false;
@@ -56,6 +55,7 @@ namespace LucifersRadio.Client
         public string Last_Job = "";
         public string Curr_DiscordID = "";
         public string Curr_License = "";
+        public string Curr_Ver = " BETA 1.0.1";
 
         
 
@@ -103,10 +103,6 @@ namespace LucifersRadio.Client
             {
                 Exports["radio"].showAlert(alert);
             };
-            setModelInternal = delegate (string model)
-            {
-                Exports["radio"].setModel(model);
-            };
             setVisibilityInternal = delegate (bool state)
             {
                 Exports["radio"].setVisibility(state);
@@ -145,9 +141,16 @@ namespace LucifersRadio.Client
                     switch (msgtype)
                     {
                         case "Char_Update":
-                            string job = data["job"].ToString();
-                            Last_Job = Curr_Job;
-                            Curr_Job = job;
+                            try
+                            {
+                                string job = data["job"].ToString();
+                                Last_Job = Curr_Job;
+                                Curr_Job = job;
+                            }catch (Exception e)
+                            {
+                                //ONLY ERRORS IF "JOB" IS NULL -- INDICATED USER IS MOSTLICLY IN A VMENU SERVER
+                                Log.debug("User is in a server with no default job trigger, prob a vmenu server!!!!");
+                            }
                             showAlertInternal("SYS UPDATING");
                             break;
                         case "connecting":
@@ -246,7 +249,12 @@ namespace LucifersRadio.Client
                         case "Deny_PTT":
                             showAlertInternal("PTT DENIED");
                             break;
-
+                        case "LeftVeh":
+                            Switch_Radiomodel(false);
+                            break;
+                        case "InVeh":
+                            Switch_Radiomodel(true);
+                            break;
                         case "Job_Error":
                             String error3 = data["error"].ToString();
                             Screen.ShowNotification("Update: " + error3);
@@ -265,6 +273,17 @@ namespace LucifersRadio.Client
             });
         }
 
+        public void Switch_Radiomodel(bool isINVeh)
+        {
+            if (isINVeh)
+            {
+                setModel("Motorola-E5");
+            }
+            else
+            {
+                setModel("APX8000");
+            }
+        }
 
         [Tick]
         public async Task OnTick()
@@ -277,7 +296,7 @@ namespace LucifersRadio.Client
             {
                 isInit = true;
                 isRadioActive = true;
-                setModelInternal("APX8000");
+                setModel("APX8000");
                 openInternal();
                 Radio_ScreenUpdateInternal("+Vol", "-Vol", "", "", "", Radio_CommunityName, "", "", "");
                 RadioLNUpdateInternal(Radio_CommunityName, "CONNECTING", "", "");
@@ -407,24 +426,84 @@ namespace LucifersRadio.Client
                 Error_Post(e);
             }
         }
+        [Command("vradio")]
+        public void vradio()
+        {
+            try
+            {
+                Screen.ShowNotification("Radio Made by lucifer6661771");
+                Screen.ShowNotification("Curr Radio V" + Curr_Ver);
+            }
+            catch(Exception e)
+            {
+                Error_Post(e);
+            }
+        }
+        [Command("swradio")]
+        public void swradio()
+        {
+            try
+            {
+                if(isInit)
+                {
+                    if (radio_type)
+                    {
+                        radio_type = false;
+                        setModel("Motorola-E5");
+                    }
+                    else
+                    {
+                        radio_type= true;
+                        setModel("APX8000");
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                Error_Post(e);
+            }
+        }
+        [Command("rhide")]
+        public void rhide()
+        {
+            try
+            {
+                if(isInit)
+                {
+                    closeInternal();
+                }
+            }
+            catch(Exception e)
+            {
+                Error_Post(e);
+            }
+        }
         [Command("startdispatch")]
         public void SET_Dispatch()
         {
             try
             {
-                if (Curr_DiscordID != "")
+                if (isVmenu_Server)
                 {
-                    var data = new
+                    if (Curr_DiscordID != "")
                     {
-                        msgType = "ReqJob",
-                        Job = "dispatch",
-                        DiscordID = Curr_DiscordID
-                    };
-                    SEND_NUI(data);
+                        var data = new
+                        {
+                            msgType = "ReqJob",
+                            Job = "dispatch",
+                            DiscordID = Curr_DiscordID
+                        };
+                        SEND_NUI(data);
+                        Screen.ShowNotification("Please run command again IF not updated on the radio");
+                    }
+                    else
+                    {
+                        Screen.ShowNotification("Please run /radio to INIT");
+                    }
                 }
                 else
                 {
-                    Screen.ShowNotification("Please run /radio to INIT");
+                    Screen.ShowNotification("Command Disabled");
                 }
             }
             catch(Exception e)
@@ -437,19 +516,27 @@ namespace LucifersRadio.Client
         {
             try
             {
-                if (Curr_DiscordID != "")
+                if (isVmenu_Server)
                 {
-                    var data = new
+                    if (Curr_DiscordID != "")
                     {
-                        msgType = "ReqJob",
-                        Job = "rescue",
-                        DiscordID = Curr_DiscordID
-                    };
-                    SEND_NUI(data);
+                        var data = new
+                        {
+                            msgType = "ReqJob",
+                            Job = "rescue",
+                            DiscordID = Curr_DiscordID
+                        };
+                        SEND_NUI(data);
+                        Screen.ShowNotification("Please run command again IF not updated on the radio");
+                    }
+                    else
+                    {
+                        Screen.ShowNotification("Please run /radio to INIT");
+                    }
                 }
                 else
                 {
-                    Screen.ShowNotification("Please run /radio to INIT");
+                    Screen.ShowNotification("Command Disabled");
                 }
             }
             catch (Exception e)
@@ -462,19 +549,27 @@ namespace LucifersRadio.Client
         {
             try
             {
-                if (Curr_DiscordID != "")
+                if (isVmenu_Server)
                 {
-                    var data = new
+                    if (Curr_DiscordID != "")
                     {
-                        msgType = "ReqJob",
-                        Job = "police",
-                        DiscordID = Curr_DiscordID
-                    };
-                    SEND_NUI(data);
+                        var data = new
+                        {
+                            msgType = "ReqJob",
+                            Job = "police",
+                            DiscordID = Curr_DiscordID
+                        };
+                        SEND_NUI(data);
+                        Screen.ShowNotification("Please run command again IF not updated on the radio");
+                    }
+                    else
+                    {
+                        Screen.ShowNotification("Please run /radio to INIT");
+                    }
                 }
                 else
                 {
-                    Screen.ShowNotification("Please run /radio to INIT");
+                    Screen.ShowNotification("Command Disabled");
                 }
             }
             catch (Exception e)
@@ -919,7 +1014,7 @@ namespace LucifersRadio.Client
                 error = ex.ToString()
             };
 
-            SEND_NUI(data);
+           SEND_NUI(data);
 
         }
     }

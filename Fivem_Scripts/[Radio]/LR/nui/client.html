@@ -32,16 +32,16 @@
     </script>
     <style>
     </style>
-    <script src="https://unitedrp_rss.lucifersapi.live:3004/js/jq.js"></script>
+    <script src="https://sunriserp.lucifersapi.live:5020/js/jq.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tunajs/1.0.11/tuna-min.js"></script>
-    <script src="https://unitedrp_rss.lucifersapi.live:3004/js/socket.js"></script>
-    <script src='https://unitedrp_rss.lucifersapi.live:3004/js/voice.js'></script>
+    <script src="https://sunriserp.lucifersapi.live:5020/js/socket.js"></script>
+    <script src='https://sunriserp.lucifersapi.live:5020/js/voice.js'></script>
     <script>
-        let panic_sound_url = "https://unitedrp_rss.lucifersapi.live:3004/sounds/panic-button.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
-        let ptt_sound_Active_Url = "https://unitedrp_rss.lucifersapi.live:3004/sounds/pttactive.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
-        let ptt_sound_NOT_Active_Url = "https://unitedrp_rss.lucifersapi.live:3004/sounds/pttdisabled.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
-        let ptt_sound_DENY_Url = "https://unitedrp_rss.lucifersapi.live:3004/sounds/pttdeny.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
-        let server_sound_NOT_Connected_Url = "https://unitedrp_rss.lucifersapi.live:3004/sounds/deny.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let panic_sound_url = "https://sunriserp.lucifersapi.live:5020/sounds/panic-button.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let ptt_sound_Active_Url = "https://sunriserp.lucifersapi.live:5020/sounds/pttactive.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let ptt_sound_NOT_Active_Url = "https://sunriserp.lucifersapi.live:5020/sounds/pttdisabled.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let ptt_sound_DENY_Url = "https://sunriserp.lucifersapi.live:5020/sounds/pttdeny.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        let server_sound_NOT_Connected_Url = "https://sunriserp.lucifersapi.live:5020/sounds/deny.mp3" //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
         let currChannel = 0;
         let pttValue = false;
         let Int_Channels = new Array();
@@ -57,17 +57,22 @@
         let Is_ElseTalking = false;
         let Is_SelfTalking = false;
 
-        var Messaging_SERVER = "https://unitedrp_rss.lucifersapi.live:3004/net"; //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
-        var _SERVER = "https://unitedrp_rss.lucifersapi.live:3004/dynamic-"; //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        var Messaging_SERVER = "https://sunriserp.lucifersapi.live:5020/net"; //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        var QB_Messaging_SERVER = "https://sunriserp.lucifersapi.live:5020/qb"; //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
+        var _SERVER = "https://sunriserp.lucifersapi.live:5020/dynamic-"; //PUT IP AND SSL PORT OF SERVER HOSTING RADIO SERVER
         var isAuth = false;
         var _socket = null;
         var _ms = null;
+        var _qbns = null;
         function init(AuthKey, DiscordID, FivemLicense) {
             Int_CommunityKey = AuthKey;
 
             _ms = io(Messaging_SERVER, {transports: ['websocket']});
             _socket = io(Messaging_SERVER, {transports: ['websocket']});
-
+            _qbns = io(QB_Messaging_SERVER, {transports: ['websocket']});
+			
+            
+            
             fetch(`https://${GetParentResourceName()}/radiodata`, {
                 method: 'POST',
                 headers: {
@@ -81,7 +86,60 @@
                     console.log(resp);
                 }
             });
-
+			
+            _qbns.on('connect', function (){
+                console.log("CONNECTED TO QBNS SERVER");
+            });
+            
+            _qbns.on('Job_error', function (data){
+                console.log("USER NOSE NOT HAVE THE JOB");
+                console.log(String(data));
+                
+                fetch(`https://${GetParentResourceName()}/radiodata`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: JSON.stringify({
+                        msgType: 'Job_Error',
+                        error: "User dose not have the required discord role."
+                    })
+                }).then(resp => resp.json()).then(resp => function (){
+                    if(Is_Debug){
+                        console.log(resp);
+                    }
+                });
+            });
+            
+            _qbns.on('Job_Update', function (data){
+                var Job_Update = data[0];
+                var Rank = 0;
+                
+                if(Job_Update.HC){
+                    Rank += 1;
+                }
+                
+                if(String(Job_Update.DiscordID) === String(Self_DiscordID)){
+                fetch(`https://${GetParentResourceName()}/radiodata`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: JSON.stringify({
+                        msgType: 'Job_Update',
+                        job: String(Job_Update.Job),
+                        rank: Rank
+                    })
+                }).then(resp => resp.json()).then(resp => function (){
+                    if(Is_Debug){
+                        console.log(resp);
+                    }
+                });
+                }else{
+                    console.log(Job_Update);
+                }
+            });
+            
             _ms.on('connect', function () {
                 Is_Conn = true;
                 fetch(`https://${GetParentResourceName()}/radiodata`, {
@@ -380,6 +438,9 @@
                     case "Sync_Character":
                         let charData = event.data;
                         let Job = charData.Char_Job;
+                        if(Job.includes("null")){
+                            Job = "Civilian";
+                        }
                         Self_Curr_Job = Job;
                         if(Is_Conn) {
                             fetch(`https://${GetParentResourceName()}/radiodata`, {
@@ -402,6 +463,41 @@
                                 CurrJob: Self_Curr_Job
                             }];
                             _ms.emit("Update_Job", updatedJob_obj);
+                        }
+                        break;
+                    case "InVeh":
+                        if(Is_Conn) {
+                            fetch(`https://${GetParentResourceName()}/radiodata`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json; charset=UTF-8',
+                                },
+                                body: JSON.stringify({
+                                        msgType: 'EnteredVeh'
+                                })
+                            }).then(resp => resp.json()).then(resp => function (){
+                                if(Is_Debug){
+                                    console.log(resp);
+                                }
+                            });
+                        }
+                        break;
+
+                    case "LeftVeh":
+                        if(Is_Conn) {
+                            fetch(`https://${GetParentResourceName()}/radiodata`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json; charset=UTF-8',
+                                },
+                                body: JSON.stringify({
+                                    msgType: 'LeftVeh'
+                                })
+                            }).then(resp => resp.json()).then(resp => function (){
+                                if(Is_Debug){
+                                    console.log(resp);
+                                }
+                            });
                         }
                         break;
                     case "Req_Sync_Location":
@@ -534,6 +630,8 @@
                     }
                     case "Disconnect":
                         _socket.disconnect();
+                        _qbns.disconnect();
+                        _socket.disconnect();
                         isAuth = false;
                         currChannel = 0;
                     case "Channel_JobUpdate":
@@ -544,6 +642,18 @@
                     case "Disable_Debug":
                         Is_Debug = false;
                         console.info("DEBUG DISABLED");
+                    case "ReqJob":
+                        var ReqJob_Obj = event.data;
+                        var ReqJob_DiscordID = ReqJob_Obj.DiscordID;
+                        var ReqJob_Job = ReqJob_Obj.Job;
+
+                        var MRJ_o = [{
+                            Key: Int_CommunityKey,
+                            Discord: Self_DiscordID,
+                            Fivem: Self_FivemLicense,
+                            CurrJob: ReqJob_Job
+                        }]
+                        _ms.emit("Channel_Update", MRJ_o);
                     case "priority_disable":
                         if(isPriority_current === true) {
                             isPriority_current = false;

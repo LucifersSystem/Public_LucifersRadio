@@ -11,8 +11,8 @@ namespace LucifersRadio.Server
 {
     public class ServerMain : BaseScript
     {
-        public string Currver = "1.0.0";
-        public string Key = "eadaa3021dadd844737e2a36ec484b86d11ae39d4aa6e14b65e5"; /// YOU MUST CHANGE THIS KEY TO ANY STRING HASH YOU WANT FOR SECURITY!!!!!! --MUST BE SAME IN SERRVER
+        public string Currver = "1.0.1";
+        public string Key = "99999999999999999999999999999999"; /// YOU MUST CHANGE THIS KEY TO ANY STRING HASH YOU WANT FOR SECURITY!!!!!! --MUST BE SAME IN SERVER
         public ServerMain()
         {
             Debug.WriteLine("Radio Version: " + Currver);

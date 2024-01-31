@@ -1,3 +1,5 @@
 is_global = true
 build_property.RootNamespace = LuciferSystems.Server
-build_property.ProjectDir = D:\radio_source_github\Fivem_Scripts\Client_source\Server\
+build_property.ProjectDir = D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Server\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 

@@ -28,3 +28,14 @@ D:\GIT PROJECTS\UnitedRP_Radio\Fivem_Scripts\Client_source\Server\obj\Debug\nets
 D:\GIT PROJECTS\UnitedRP_Radio\Fivem_Scripts\Client_source\Server\obj\Debug\netstandard2.0\LuciferSystems.Server.csproj.CoreCompileInputs.cache
 D:\GIT PROJECTS\UnitedRP_Radio\Fivem_Scripts\Client_source\Server\obj\Debug\netstandard2.0\LuciferSystems.Server.net.dll
 D:\GIT PROJECTS\UnitedRP_Radio\Fivem_Scripts\Client_source\Server\obj\Debug\netstandard2.0\LuciferSystems.Server.net.pdb
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Server\bin\Debug\netstandard2.0\LuciferSystems.Server.deps.json
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Server\bin\Debug\netstandard2.0\LuciferSystems.Server.net.dll
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Server\bin\Debug\netstandard2.0\LuciferSystems.Server.net.pdb
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Server\obj\Debug\netstandard2.0\LuciferSystems.Server.csproj.AssemblyReference.cache
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Server\obj\Debug\netstandard2.0\LuciferSystems.Server.GeneratedMSBuildEditorConfig.editorconfig
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Server\obj\Debug\netstandard2.0\LuciferSystems.Server.AssemblyInfoInputs.cache
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Server\obj\Debug\netstandard2.0\LuciferSystems.Server.AssemblyInfo.cs
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Server\obj\Debug\netstandard2.0\LuciferSystems.Server.csproj.CoreCompileInputs.cache
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Server\obj\Debug\netstandard2.0\LuciferSystems.Server.sourcelink.json
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Server\obj\Debug\netstandard2.0\LuciferSystems.Server.net.dll
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Server\obj\Debug\netstandard2.0\LuciferSystems.Server.net.pdb

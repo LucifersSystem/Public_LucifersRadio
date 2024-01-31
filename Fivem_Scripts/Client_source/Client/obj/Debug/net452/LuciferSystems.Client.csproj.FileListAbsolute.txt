@@ -38,3 +38,14 @@ D:\GIT PROJECTS\UnitedRP_Radio\Fivem_Scripts\Client_source\Client\obj\Debug\net4
 D:\GIT PROJECTS\UnitedRP_Radio\Fivem_Scripts\Client_source\Client\obj\Debug\net452\LuciferSystems.Client.csproj.CoreCompileInputs.cache
 D:\GIT PROJECTS\UnitedRP_Radio\Fivem_Scripts\Client_source\Client\obj\Debug\net452\LuciferSystems.Client.csproj.CopyComplete
 D:\GIT PROJECTS\UnitedRP_Radio\Fivem_Scripts\Client_source\Client\obj\Debug\net452\LuciferSystems.Client.net.dll
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Client\bin\Debug\net452\LuciferSystems.Client.net.dll
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Client\bin\Debug\net452\CitizenFX.Core.Client.dll
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Client\bin\Debug\net452\Newtonsoft.Json.dll
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Client\obj\Debug\net452\LuciferSystems.Client.csproj.AssemblyReference.cache
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Client\obj\Debug\net452\LuciferSystems.Client.GeneratedMSBuildEditorConfig.editorconfig
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Client\obj\Debug\net452\LuciferSystems.Client.AssemblyInfoInputs.cache
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Client\obj\Debug\net452\LuciferSystems.Client.AssemblyInfo.cs
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Client\obj\Debug\net452\LuciferSystems.Client.csproj.CoreCompileInputs.cache
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Client\obj\Debug\net452\LuciferSystems.Client.sourcelink.json
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Client\obj\Debug\net452\LuciferSystems.Client.csproj.CopyComplete
+D:\gitprojects\Public_LucifersRadio\Fivem_Scripts\Client_source\Client\obj\Debug\net452\LuciferSystems.Client.net.dll

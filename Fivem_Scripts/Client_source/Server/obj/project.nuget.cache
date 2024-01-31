@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "66oF2MBODl+MEmBkAGENzFuLr1x7UMZB+ze7OLLb6zOtJfxQjrXduXYHnGeY3Kv3loaR1TKtqmlJAIR8lc/TRQ==",
+  "dgSpecHash": "JILNnOmOMsLXcwrOu62T4qkoSNRSWQVvOh5eIrbXg3NPupte9sk3m4nUTefvyU3kE50hCe/HOnIZAovmarogWA==",
   "success": true,
-  "projectFilePath": "D:\\GIT PROJECTS\\UnitedRP_Radio\\Fivem_Scripts\\Client_source\\Server\\LuciferSystems.Server.csproj",
+  "projectFilePath": "D:\\gitprojects\\Public_LucifersRadio\\Fivem_Scripts\\Client_source\\Server\\LuciferSystems.Server.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\mjoly\\.nuget\\packages\\citizenfx.core.server\\1.0.7211\\citizenfx.core.server.1.0.7211.nupkg.sha512",
-    "C:\\Users\\mjoly\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
-    "C:\\Users\\mjoly\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+    "C:\\Users\\12243\\.nuget\\packages\\citizenfx.core.server\\1.0.7375\\citizenfx.core.server.1.0.7375.nupkg.sha512",
+    "C:\\Users\\12243\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\12243\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
   ],
   "logs": []
 }

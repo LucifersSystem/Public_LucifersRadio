@@ -226,19 +226,7 @@ $(document).ready(function(){
     {
         radioModel = model;
         resizeRadio(model);
-        $("#modelCSS").attr("href","layouts/"+model+"/style.css")
-        $.get("layouts/"+model+"/config.json")
-            .done((data)=>
-            {
-                if(typeof data == "string")
-                    data = JSON.parse(data);
-                // console.log("Set radio model config")
-                radioModelConfig = data;
-            })
-            .fail(()=>{
-                // console.log("Radio Model Config not found")
-                radioModelConfig = defaultRadioModelConfig;
-            });
+        $("#modelCSS").attr("href","layouts/"+model+"/style.css");
         if(!radioHidden)
         {
             $('#radio').show();

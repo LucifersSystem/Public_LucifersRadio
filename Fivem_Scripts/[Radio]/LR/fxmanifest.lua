@@ -2,12 +2,12 @@ fx_version 'bodacious'
 name 'Lucifer Systems Radio'
 description 'Lucifer Systems Radio'
 author 'Matthew J.'
-version 'v1.0.0'
+version 'v1.0.1'
 url 'https://lucifersapi.live'
 games { 'gta5' }
 client_scripts {
-    'LuciferSystems.Client.net.dll',
-    'client.lua'
+    'client.lua',
+    'LuciferSystems.Client.net.dll'
 }
 
 files {

@@ -3,7 +3,7 @@ game 'gta5'
 name 'radio'
 description 'Lucifer Systems Radio (GUI SIDE)'
 author 'Lucifer Systems'
-version '1.0.0'
+version '1.0.1'
 url 'https://api.luficersapi.live'
 
 ui_page 'html/index.html'
